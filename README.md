@@ -27,29 +27,28 @@ repo sync
 
 | Machine  | DDR  |
 | -------- | ---- |
-|uCOM-IMX8P| 2G/4G|
+|uCOM-M510 |  8G  |
 
-### Build uCOM-IMX8P BSP
-- (1)	Download Yocto BSP with kernel 6.6.36 RT
+### Build uCOM-M510 BSP
+- (1)	Download Yocto BSP with kernel 5.15
     ```bash!
     $ mkdir imx-yocto-bsp
     $ cd imx-yocto-bsp
-    $ repo init -u https://github.com/BSP-Dev/aaeon-manifest.git -b scarthgap -m aaeon-scarthgap-v03.xml
+    $ repo init -u git@github.com:BSP-Dev/aaeon-manifest.git -b kirkstone -m aaeon-kirkstone-v02.xml --no-repo-verify
     $ repo sync
     ```
 - (2)	Environment setup
     ```bash!
-    # uCOM-IMX8P (2G DDR)
-    $ DISTRO=nxp-real-time-edge MACHINE=imx-ucom-imx8p-2g source esa-setup-env.sh -b build-imx8mpevk-real-time-edge
-	
-	# uCOM-IMX8P (4G DDR)
-    $ DISTRO=nxp-real-time-edge MACHINE=imx-ucom-imx8p-4g source esa-setup-env.sh -b build-imx8mpevk-real-time-edge
+    # uCOM-M510 (8G DDR)
+    $ source aaeon-mtk-setup-release.sh
+	$ TEMPLATECONF=$PWD/src/meta-rity/meta/conf source src/poky/oe-init-build-env
+	$ export BUILD_DIR=`pwd`
     
     ```
     
 - (3)	Build NXP IMX BSP
     ```bash!
-    $ bitbake nxp-image-real-time-edge
+    $ MACHINE=genio-510-evk bitbake rity-demo-image -k
     ```
 - Note: (1)	If FetchError,then change git branch=master => branch=main
 
