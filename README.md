@@ -49,11 +49,11 @@ repo sync
     ```
     
 - (3)	Build BSP
-    # uCOM-M510 (8G DDR)
+    #### uCOM-M510 (8G DDR)
 	```bash!
     $ MACHINE=mtk-ucom-m510 bitbake rity-demo-image -k
     ```
-	# uCOM-M700 (8G DDR)
+	#### uCOM-M700 (8G DDR)
 	```bash!
     $ MACHINE=mtk-ucom-m700 bitbake rity-demo-image -k
     ```
