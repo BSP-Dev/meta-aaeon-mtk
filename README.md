@@ -28,8 +28,9 @@ repo sync
 | Machine  | DDR  |
 | -------- | ---- |
 |uCOM-M510 |  8G  |
+|uCOM-M700 |  8G  |
 
-### Build uCOM-M510 BSP
+### Build MTK BSP
 - (1)	Download Yocto BSP with kernel 5.15
     ```bash!
     $ mkdir imx-yocto-bsp
@@ -39,16 +40,22 @@ repo sync
     ```
 - (2)	Environment setup
     ```bash!
-    # uCOM-M510 (8G DDR)
     $ source aaeon-mtk-setup-release.sh
 	$ TEMPLATECONF=$PWD/src/meta-rity/meta/conf source src/poky/oe-init-build-env
 	$ export BUILD_DIR=`pwd`
-    
+    $ echo 'NDA_BUILD = "1"' >> $BUILD_DIR/conf/site.conf
+    $ echo 'DL_DIR = "${TOPDIR}/../downloads"' >> $BUILD_DIR/conf/site.conf
+    $ echo 'SSTATE_DIR = "${TOPDIR}/../sstate-cache"' >> $BUILD_DIR/conf/site.conf
     ```
     
-- (3)	Build NXP IMX BSP
-    ```bash!
-    $ MACHINE=genio-510-evk bitbake rity-demo-image -k
+- (3)	Build BSP
+    # uCOM-M510 (8G DDR)
+	```bash!
+    $ MACHINE=mtk-ucom-m510 bitbake rity-demo-image -k
+    ```
+	# uCOM-M700 (8G DDR)
+	```bash!
+    $ MACHINE=mtk-ucom-m700 bitbake rity-demo-image -k
     ```
 - Note: (1)	If FetchError,then change git branch=master => branch=main
 
