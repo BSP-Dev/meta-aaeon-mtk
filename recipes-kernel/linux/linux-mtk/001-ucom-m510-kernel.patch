@@ -1,132 +1,138 @@
-diff --git a/arch/arm64/boot/dts/mediatek/genio-510-evk.dts b/arch/arm64/boot/dts/mediatek/genio-510-evk.dts
-index 54b50ce1842c..575626eb79d2 100644
---- a/arch/arm64/boot/dts/mediatek/genio-510-evk.dts
-+++ b/arch/arm64/boot/dts/mediatek/genio-510-evk.dts
-@@ -20,12 +20,14 @@ aliases {
+diff --git a/arch/arm64/boot/dts/mediatek/mt8370-genio-510-evk.dts b/arch/arm64/boot/dts/mediatek/mt8370-genio-510-evk.dts
+index d17008d677b7..c04ba4061718 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8370-genio-510-evk.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8370-genio-510-evk.dts
+@@ -27,18 +27,21 @@ aliases {
+ 		ethernet0 = &eth;
  		serial0 = &uart0;
  		dsi0 = &dsi0;
- 		ethernet0 = &eth;
-+		rtc0 = &pcf85063;
-+		rtc1 = &mt6359rtc;
++		rtc0 = &pcf85063;  /* 20250905 */
++		rtc1 = &mt6359rtc; /* 20250905 */
  	};
  
  	backlight_lcd0: backlight-lcd0 {
  		compatible = "pwm-backlight";
- 		pwms = <&disp_pwm0 0 500000>;
+-		pwms = <&disp_pwm0 0 500000>;
 -		enable-gpios = <&pio 8 GPIO_ACTIVE_HIGH>;
-+		enable-gpios = <&pio 45 GPIO_ACTIVE_HIGH>;
++		pwms = <&disp_pwm1 0 500000>; /* 20250905 */
++		enable-gpios = <&pio 45 GPIO_ACTIVE_HIGH>; /* 20250905 */
  		brightness-levels = <0 1023>;
  		num-interpolated-steps = <1023>;
  		default-brightness-level = <576>;
-@@ -49,14 +51,18 @@ edp_panel_fixed_3v3: regulator@0 {
- 		regulator-min-microvolt = <3300000>;
- 		regulator-max-microvolt = <3300000>;
- 		enable-active-high;
--		gpio = <&pio 15 GPIO_ACTIVE_HIGH>;
-+		gpio = <&pio 111 GPIO_ACTIVE_HIGH>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&edp_panel_3v3_en_pins>;
+-		status = "disabled";
++		status = "okay"; /* 20250905 */
  	};
+ 
++	/* 20250905
+ 	backlight_lcd1: backlight-lcd1 {
+ 		compatible = "pwm-backlight";
+ 		pwms = <&disp_pwm1 0 500000>;
+@@ -46,11 +49,12 @@ backlight_lcd1: backlight-lcd1 {
+ 		num-interpolated-steps = <1023>;
+ 		default-brightness-level = <576>;
+ 	};
++	*/
+ 
+ 	chosen {
+ 		stdout-path = "serial0:921600n8";
+ 	};
+-
++	
+ 	firmware {
+ 		optee {
+ 			compatible = "linaro,optee-tz";
+@@ -60,7 +64,8 @@ optee {
  
  	memory@40000000 {
  		device_type = "memory";
 -		reg = <0 0x40000000 0x1 0x00000000>;
-+
-+		/* 4GB */
-+		// reg = <0 0x40000000 0x1 0x00000000>;
-+		/* 8GB */
-+		reg = <0 0x40000000 0x2 0x00000000>;
++		//reg = <0 0x40000000 0x1 0x00000000>;
++		reg = <0 0x40000000 0x2 0x00000000>;  /* 20250905 */
  	};
  
  	reserved-memory {
-@@ -130,69 +136,11 @@ optee {
- 		};
- 	};
- 
--	usb_p0_vbus: usb0-otg-vbus {
--		compatible = "regulator-fixed";
--		regulator-name = "p0_vbus";
--		regulator-min-microvolt = <5000000>;
--		regulator-max-microvolt = <5000000>;
--		gpio = <&pio 84 GPIO_ACTIVE_HIGH>;
--		enable-active-high;
--	};
--
--	usb_p1_vbus: usb-p1-vbus {
--		compatible = "regulator-fixed";
--		regulator-name = "p1_vbus";
--		regulator-min-microvolt = <5000000>;
--		regulator-max-microvolt = <5000000>;
--		gpio = <&pio 87 GPIO_ACTIVE_HIGH>;
--		enable-active-high;
--	};
--
--	usb_p2_vbus: usb-p2-vbus {
--		compatible = "regulator-fixed";
--		regulator-name = "p2_vbus";
--		regulator-min-microvolt = <5000000>;
--		regulator-max-microvolt = <5000000>;
--		enable-active-high;
--	};
--
--	hub3v3: regulator@4 {
--		compatible = "regulator-fixed";
--		regulator-name = "vhub3v3";
--		regulator-min-microvolt = <3300000>;
--		regulator-max-microvolt = <3300000>;
--		gpio = <&pio 112 0>; /* HUB_3V3_EN */
--		startup-delay-us = <10000>;
--		enable-active-high;
--	};
--
--	onboard_hub: regulator@5 {
--		compatible = "regulator-fixed";
--		regulator-name = "hub_reset";
--		regulator-min-microvolt = <1800000>;
--		regulator-max-microvolt = <1800000>;
--		gpio = <&pio 7 0>; /* HUB_RESET */
--		vin-supply = <&hub3v3>;
--		enable-active-low;
--	};
--
--	lcm1_tp_avdd: lcm1-tp-avdd {
--		compatible = "regulator-fixed";
--		regulator-name = "lcm1-tp-avdd";
--		regulator-min-microvolt = <3300000>;
--		regulator-max-microvolt = <3300000>;
--		gpio = <&pio 119 GPIO_ACTIVE_HIGH>;
--		enable-active-high;
--		pinctrl-names = "default";
--		pinctrl-0 = <&lcm1_tp_avdd_pin>;
--	};
--
- 	VDD_5V: VDD-5V {
- 		compatible = "regulator-fixed";
- 		regulator-name = "VDD-5V";
- 		regulator-min-microvolt = <5000000>;
- 		regulator-max-microvolt = <5000000>;
--		gpio = <&pio 10 GPIO_ACTIVE_HIGH>;
- 		enable-active-high;
- 		regulator-always-on;
- 	};
-@@ -202,16 +150,6 @@ VDD_3V3: VDD-3V3 {
- 		regulator-name = "VDD-3V3";
+@@ -151,11 +156,11 @@ edp_panel_fixed_3v3: regulator-1 {
  		regulator-min-microvolt = <3300000>;
  		regulator-max-microvolt = <3300000>;
--		gpio = <&pio 9 GPIO_ACTIVE_HIGH>;
--		enable-active-high;
--		regulator-always-on;
--	};
+ 		enable-active-high;
+-		gpio = <&pio 15 GPIO_ACTIVE_HIGH>;
++		gpio = <&pio 111 GPIO_ACTIVE_HIGH>; /* 20250905 */
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&edp_panel_3v3_en_pins>;
+ 	};
 -
--	sdio_fixed_3v3: regulator@2 {
--		compatible = "regulator-fixed";
--		regulator-name = "sdio_card";
--		regulator-min-microvolt = <3300000>;
--		regulator-max-microvolt = <3300000>;
++	
+ 	gpio_fixed_3v3: regulator-2 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "gpio_3v3_en";
+@@ -175,6 +180,8 @@ sdio_fixed_1v8: regulator-3 {
+ 		regulator-always-on;
+ 	};
+ 
++	
++	/* 20250905
+ 	sdio_fixed_3v3: regulator-4 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "sdio_card";
+@@ -183,12 +190,14 @@ sdio_fixed_3v3: regulator-4 {
  		enable-active-high;
  		regulator-always-on;
  	};
-@@ -229,7 +167,7 @@ dsi0_en: dsi0-en {
++	*/
+ 
+ 	mtk_fsource: mtk-fsource {
+ 		compatible = "regulator-output";
+ 		vout-supply = <&mt6359_vefuse_ldo_reg>;
+ 	};
+ 
++	/* 20250905
+ 	touch0_fixed_3v3: regulator-5 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "touch_3v3";
+@@ -197,6 +206,7 @@ touch0_fixed_3v3: regulator-5 {
+ 		gpio = <&pio 119 GPIO_ACTIVE_HIGH>;
+ 		enable-active-high;
+ 	};
++	*/
+ 
+ 	usb_hub_fixed_3v3: regulator-6 {
+ 		compatible = "regulator-fixed";
+@@ -217,6 +227,7 @@ usb_hub_reset_1v8: regulator-7 {
+ 		vin-supply = <&usb_hub_fixed_3v3>;
+ 	};
+ 
++	/* 20250905
+ 	usb_p0_vbus: regulator-8 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "usb_p0_vbus";
+@@ -225,7 +236,9 @@ usb_p0_vbus: regulator-8 {
+ 		gpio = <&pio 84 GPIO_ACTIVE_HIGH>;
+ 		enable-active-high;
+ 	};
++	*/
+ 
++	/* 20250905
+ 	usb_p1_vbus: regulator-9 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "usb_p1_vbus";
+@@ -234,7 +247,9 @@ usb_p1_vbus: regulator-9 {
+ 		gpio = <&pio 87 GPIO_ACTIVE_HIGH>;
+ 		enable-active-high;
+ 	};
++	*/
+ 
++	/* 20250905
+ 	usb_p2_vbus: regulator-10 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "usb_p2_vbus";
+@@ -242,15 +257,18 @@ usb_p2_vbus: regulator-10 {
+ 		regulator-max-microvolt = <5000000>;
+ 		enable-active-high;
+ 	};
++	*/
+ 
++	/* 20250905
+ 	dsi0_en: dsi0-en {
  		compatible = "regulator-fixed";
  		regulator-name = "lcm1_en";
  		enable-active-high;
@@ -135,61 +141,214 @@ index 54b50ce1842c..575626eb79d2 100644
  		pinctrl-names = "default";
  		pinctrl-0 = <&dsi0_en_pins_default>;
  	};
-@@ -342,6 +280,7 @@ &auxadc {
++	*/
+ 
+ 	amic_codec: amic-codec {
+ 		#sound-dai-cells = <0>;
+@@ -395,10 +413,22 @@ &gpu {
+ 
+ &i2c0 {
+ 	pinctrl-names = "default";
+-	pinctrl-0 = <&i2c0_pins>;
++	//pinctrl-0 = <&i2c0_pins>; /* 20250905 */
++	pinctrl-0 = <&i2c0_pins &tlv320_aud_rst>;  /* 20250905 */
+ 	clock-frequency = <400000>;
+ 	status = "okay";
++	
++	/* 20250905 */
++	tlv320aic3106: audio-codec@1b {
++		#sound-dai-cells = <0>;
++		compatible = "ti,tlv320aic3106";
++		reg = <0x1b>;
++		ai3x-micbias-vg = <1>;
++		status = "okay";
++		reset-gpios = <&pio 6 GPIO_ACTIVE_LOW>;
++ 	};
+ 
++	/* 20250905
+ 	touchscreen@5d {
+ 		compatible = "goodix,gt9271";
+ 		reg = <0x5d>;
+@@ -411,6 +441,7 @@ touchscreen@5d {
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&touch_pins>;
+ 	};
++	*/
  };
  
- &afe {
-+	mediatek,etdm-in2-cowork-source = <3>; // etdm-out2 (I2SO2)
- 	memory-region = <&afe_dma_mem_reserved>;
- 	#sound-dai-cells = <0>;
- 	mediatek,dmic-iir-on;
-@@ -358,6 +297,7 @@ &eth {
- 	phy-mode ="rgmii-rxid";
- 	phy-handle = <&ethernet_phy0>;
- 	snps,reset-gpio = <&pio 147 GPIO_ACTIVE_HIGH>;
-+	/* Reset time is 10ms, 10ms for rtl8211f */
- 	snps,reset-delay-us = <0 10000 10000>;
- 	mediatek,tx-delay-ps = <2030>;
- 	mediatek,mac-wol;
-@@ -382,7 +322,7 @@ &dpi1 {
+ &i2c1 {
+@@ -419,6 +450,7 @@ &i2c1 {
+ 	clock-frequency = <400000>;
+ 	status = "okay";
+ 
++	/* 20250905
+ 	it5205fn: it5205fn@48 {
+ 		compatible = "mediatek,it5205fn";
+ 		reg = <0x48>;
+@@ -426,6 +458,7 @@ it5205fn: it5205fn@48 {
+ 		svid = /bits/ 16 <0xff01>;
+ 		status = "okay";
+ 	};
++	*/
+ };
+ 
+ &i2c2 {
+@@ -445,10 +478,17 @@ &i2c3 {
+ &i2c4 {
+ 	pinctrl-names = "default", "default";
+ 	pinctrl-0 = <&i2c4_pins>;
+-	pinctrl-1 = <&rt1715_int_pins>;
++	//pinctrl-1 = <&rt1715_int_pins>; /* 20250905 */
+ 	clock-frequency = <1000000>;
+ 	status = "okay";
+ 
++	/* 20250905 */
++	pcf85063: pcf85063@51 {
++    	compatible = "nxp,pcf85063";
++    	reg = <0x51>;
++	};
++	
++	/* 20250905
+ 	rt1715@4e {
+ 		compatible = "richtek,rt1715";
+ 		reg = <0x4e>;
+@@ -498,6 +538,7 @@ ports {
+ 			port@0 {};
+ 		};
+ 	};
++	*/
+ };
+ 
+ &i2c5 {
+@@ -512,6 +553,17 @@ &i2c6 {
+ 	pinctrl-0 = <&i2c6_pins>;
+ 	clock-frequency = <400000>;
+ 	status = "okay";
++	
++	/* 20250905 */
++	baseboard_eeprom: baseboard_eeprom@57 {
++		compatible = "atmel,24c02";
++		label = "AT24C02D";
++		reg = <0x57>;
++		pagesize = <8>;
++		size = <256>;
++		address-width = <8>;
++		num-addresses = <1>;
++	};
+ };
+ 
+ &mfg0 {
+@@ -559,6 +611,7 @@ &mmc1 {
+ 	vqmmc-supply = <&mt6359_vsim1_ldo_reg>;
+ };
+ 
++/* 20250905
+ &wifi_pwrseq {
+ 	status = "okay";
+ 	pinctrl-names = "default";
+@@ -567,11 +620,13 @@ &wifi_pwrseq {
+ 	reset-gpios = <&pio 72 1>;
+ 	post-power-on-delay-ms = <200>;
+ };
++*/
+ 
+ &watchdog {
+ 	/delete-property/ mediatek,disable-extrst;
+ };
+ 
++/* 20250905
+ &mmc2 {
+ 	status = "okay";
+ 	pinctrl-names = "default", "state_uhs", "state_eint",
+@@ -596,6 +651,7 @@ &mmc2 {
+ 	vqmmc-supply = <&sdio_fixed_1v8>;
+ 	mmc-pwrseq = <&wifi_pwrseq>;
+ };
++*/
+ 
+ &mt6359_vbbck_ldo_reg {
+ 	regulator-always-on;
+@@ -617,9 +673,11 @@ &mt6359_vgpu11_buck_reg {
+ 	regulator-always-on;
+ };
+ 
++/* 20250905
+ &mt6359_vmodem_buck_reg {
+ 	regulator-always-on;
+ };
++*/
+ 
+ &mt6359_vpa_buck_reg {
+ 	regulator-max-microvolt = <3100000>;
+@@ -655,9 +713,11 @@ &mt6359_vsram_others_ldo_reg {
+ 	regulator-coupled-max-spread = <6250>;
+ };
+ 
++/* 20250905
+ &mt6359_vsram_md_ldo_reg {
+ 	regulator-always-on;
+ };
++*/
+ 
+ &mt6359_vufs_ldo_reg {
+ 	regulator-always-on;
+@@ -702,7 +762,7 @@ ethernet_phy0: ethernet-phy@1 {
  };
  
  &dp_intf1 {
 -	status = "disabled";
-+	status = "okay";
++	status = "okay";  /* 20250905 */
  	mediatek,oob-hpd;
  	ports {
  		port {
-@@ -396,7 +336,7 @@ dp_intf1_out: endpoint {
+@@ -716,7 +776,7 @@ dp_intf1_out: endpoint {
  &dp_tx {
  	pinctrl-names = "default";
- 	pinctrl-0 = <&dptx_pin>;
+ 	pinctrl-0 = <&dptx_pins>;
 -	status = "disabled";
-+	status = "okay";
++	status = "okay";  /* 20250905 */
  
  	ports {
  		#address-cells = <1>;
-@@ -422,8 +362,7 @@ panel@0 {
+@@ -748,11 +808,11 @@ panel@0 {
+ 		status = "disabled";
+ 		reg = <0>;
  		pinctrl-names = "default";
- 		pinctrl-0 = <&panel_pins_default>;
- 		backlight = <&backlight_lcd1>;
+-		pinctrl-0 = <&panel_pins_default>;
+-		backlight = <&backlight_lcd1>;
 -		reset-gpios = <&pio 25 GPIO_ACTIVE_HIGH>;
--		dcdc-gpios = <&pio 45 GPIO_ACTIVE_HIGH>;
-+		dcdc-gpios = <&pio 8 GPIO_ACTIVE_HIGH>;
- 		iovcc-supply = <&dsi0_en>;
+-		enable-gpios = <&pio 45 GPIO_ACTIVE_HIGH>;
+-		iovcc-supply = <&dsi0_en>;
++		//pinctrl-0 = <&panel_pins_default>; /* 20250905 */
++		//backlight = <&backlight_lcd1>; /* 20250905 */
++		//reset-gpios = <&pio 25 GPIO_ACTIVE_HIGH>;  /* 20250905 */
++		enable-gpios = <&pio 8 GPIO_ACTIVE_HIGH>; /* 20250905 */
++		//iovcc-supply = <&dsi0_en>; /* 20250905 */
  		port {
  			panel0_in: endpoint {
-@@ -456,36 +395,61 @@ &hdmi0 {
+ 				remote-endpoint = <&dsi0_out>;
+@@ -769,13 +829,48 @@ dsi0_out: endpoint {
+ 	};
  };
  
++/* 20250905
+ &disp_pwm1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&disp_pwm1_pin_default>;
+-	status = "disabled";
++	status = "okay";
+ };
++*/
+ 
  &pio {
++	/* 20250905 */
 +	gpio_pins: gpio-pins {
 +		cn29_gpio: cn29-gpio {
 +			pinmux = <PINMUX_GPIO0__FUNC_B_GPIO0>,
 +				<PINMUX_GPIO1__FUNC_B_GPIO1>,
 +				<PINMUX_GPIO3__FUNC_B_GPIO3>,
 +				<PINMUX_GPIO5__FUNC_B_GPIO5>,
-+				// <PINMUX_GPIO6__FUNC_B_GPIO6>, // TLV320_RST
++				<PINMUX_GPIO6__FUNC_B_GPIO6>, // TLV320_RST
 +				<PINMUX_GPIO7__FUNC_B_GPIO7>,
 +				<PINMUX_GPIO123__FUNC_B_GPIO123>;
 +			output-high;
@@ -206,187 +365,143 @@ index 54b50ce1842c..575626eb79d2 100644
 +			output-high;
 +		};
 +	};
-+
- 	aud_pins_default: audiodefault {
- 		pins-cmd-dat {
--			pinmux = <PINMUX_GPIO101__FUNC_O_AUD_CLK_MOSI>,
--				 <PINMUX_GPIO102__FUNC_O_AUD_SYNC_MOSI>,
--				 <PINMUX_GPIO103__FUNC_O_AUD_DAT_MOSI0>,
--				 <PINMUX_GPIO104__FUNC_O_AUD_DAT_MOSI1>,
--				 <PINMUX_GPIO105__FUNC_I0_AUD_DAT_MISO0>,
--				 <PINMUX_GPIO106__FUNC_I0_AUD_DAT_MISO1>,
--				 <PINMUX_GPIO107__FUNC_B0_I2SIN_MCK>,
--				 <PINMUX_GPIO108__FUNC_B0_I2SIN_BCK>,
--				 <PINMUX_GPIO109__FUNC_B0_I2SIN_WS>,
--				 <PINMUX_GPIO110__FUNC_I0_I2SIN_D0>,
--				 <PINMUX_GPIO114__FUNC_O_I2SO2_MCK>,
--				 <PINMUX_GPIO115__FUNC_B0_I2SO2_BCK>,
--				 <PINMUX_GPIO116__FUNC_B0_I2SO2_WS>,
--				 <PINMUX_GPIO117__FUNC_O_I2SO2_D0>,
--				 <PINMUX_GPIO118__FUNC_O_I2SO2_D1>,
--				 <PINMUX_GPIO125__FUNC_O_DMIC1_CLK>,
--				 <PINMUX_GPIO126__FUNC_I0_DMIC1_DAT>,
--				 <PINMUX_GPIO128__FUNC_O_DMIC2_CLK>,
--				 <PINMUX_GPIO129__FUNC_I0_DMIC2_DAT>,
--				 <PINMUX_GPIO121__FUNC_B0_PCM_CLK>,
--				 <PINMUX_GPIO122__FUNC_B0_PCM_SYNC>,
--				 <PINMUX_GPIO124__FUNC_I0_PCM_DI>;
-+			pinmux = <PINMUX_GPIO101__FUNC_O_AUD_CLK_MOSI>,	// M33
-+				 <PINMUX_GPIO102__FUNC_O_AUD_SYNC_MOSI>,	// M35
-+				 <PINMUX_GPIO103__FUNC_O_AUD_DAT_MOSI0>,	// M34
-+				 <PINMUX_GPIO104__FUNC_O_AUD_DAT_MOSI1>,	// N33
-+				 <PINMUX_GPIO105__FUNC_I0_AUD_DAT_MISO0>,	// M30
-+				 <PINMUX_GPIO106__FUNC_I0_AUD_DAT_MISO1>,	// M32
-+				 <PINMUX_GPIO107__FUNC_B0_I2SIN_MCK>,		// G36 -> X
-+				 <PINMUX_GPIO108__FUNC_B0_I2SIN_BCK>,		// H36 -> X
-+				 <PINMUX_GPIO109__FUNC_B0_I2SIN_WS>,		// J36 -> X
-+				 <PINMUX_GPIO110__FUNC_I0_I2SIN_D0>,		// J37 -> tlv320
-+				 <PINMUX_GPIO114__FUNC_O_I2SO2_MCK>,		// H34 -> tlv320
-+				 <PINMUX_GPIO115__FUNC_B0_I2SO2_BCK>,		// H33 -> tlv320
-+				 <PINMUX_GPIO116__FUNC_B0_I2SO2_WS>,		// J34 -> tlv320
-+				 <PINMUX_GPIO117__FUNC_O_I2SO2_D0>,			// J33 -> tlv320
-+				 <PINMUX_GPIO118__FUNC_O_I2SO2_D1>,			// G31 -> X
-+				 <PINMUX_GPIO125__FUNC_O_DMIC1_CLK>,		// N30 -> X
-+				 <PINMUX_GPIO126__FUNC_I0_DMIC1_DAT>,		// N31 -> X
-+				 <PINMUX_GPIO128__FUNC_O_DMIC2_CLK>,		// N34 -> X
-+				 <PINMUX_GPIO129__FUNC_I0_DMIC2_DAT>;		// P33 -> X
-+				//  <PINMUX_GPIO121__FUNC_B0_PCM_CLK>,		// AD30 -> CARRIER_PWR_ON
-+				//  <PINMUX_GPIO122__FUNC_B0_PCM_SYNC>,		// AC31 -> GPIO122(SLEEP#)
-+				//  <PINMUX_GPIO124__FUNC_I0_PCM_DI>;		// AB31 -> GPIO124(LID#)
-+
- 		};
- 	};
- 
- 	edp_panel_3v3_en_pins: edp-panel-3v3-en-pins {
- 		pins1 {
--			pinmux = <PINMUX_GPIO15__FUNC_B_GPIO15>;
-+			pinmux = <PINMUX_GPIO111__FUNC_B_GPIO111>;
- 			output-high;
- 		};
- 	};
-@@ -499,37 +463,32 @@ pins-cmd-dat {
- 
- 	eth_default_pins: eth-default-pins {
- 		pins-txd {
--			pinmux = <PINMUX_GPIO131__FUNC_O_GBE_TXD3>,
--				 <PINMUX_GPIO132__FUNC_O_GBE_TXD2>,
--				 <PINMUX_GPIO133__FUNC_O_GBE_TXD1>,
--				 <PINMUX_GPIO134__FUNC_O_GBE_TXD0>;
-+			pinmux = <PINMUX_GPIO131__FUNC_O_GBE_TXD3>, 	// AB9
-+				 <PINMUX_GPIO132__FUNC_O_GBE_TXD2>,			// AC9
-+				 <PINMUX_GPIO133__FUNC_O_GBE_TXD1>,			// AB8
-+				 <PINMUX_GPIO134__FUNC_O_GBE_TXD0>;			// AC4
- 			drive-strength = <MTK_DRIVE_8mA>;
- 		};
- 		pins-cc {
--			pinmux = <PINMUX_GPIO139__FUNC_B0_GBE_TXC>,
--				 <PINMUX_GPIO142__FUNC_O_GBE_TXEN>,
--				 <PINMUX_GPIO141__FUNC_I0_GBE_RXDV>,
--				 <PINMUX_GPIO140__FUNC_I0_GBE_RXC>;
-+			pinmux = <PINMUX_GPIO139__FUNC_B0_GBE_TXC>, 	// AB6
-+				 <PINMUX_GPIO140__FUNC_I0_GBE_RXC>,			// AB5
-+				 <PINMUX_GPIO141__FUNC_I0_GBE_RXDV>,		// AC5
-+				 <PINMUX_GPIO142__FUNC_O_GBE_TXEN>;			// AA5
- 			drive-strength = <MTK_DRIVE_8mA>;
- 		};
- 		pins-rxd {
--			pinmux = <PINMUX_GPIO135__FUNC_I0_GBE_RXD3>,
--				 <PINMUX_GPIO136__FUNC_I0_GBE_RXD2>,
--				 <PINMUX_GPIO137__FUNC_I0_GBE_RXD1>,
--				 <PINMUX_GPIO138__FUNC_I0_GBE_RXD0>;
-+			pinmux = <PINMUX_GPIO135__FUNC_I0_GBE_RXD3>,	// AB3
-+				 <PINMUX_GPIO136__FUNC_I0_GBE_RXD2>,		// AA8
-+				 <PINMUX_GPIO137__FUNC_I0_GBE_RXD1>,		// AC8
-+				 <PINMUX_GPIO138__FUNC_I0_GBE_RXD0>;		// AB7
- 			drive-strength = <MTK_DRIVE_8mA>;
- 		};
- 		pins-mdio {
--			pinmux = <PINMUX_GPIO143__FUNC_O_GBE_MDC>,
--				 <PINMUX_GPIO144__FUNC_B1_GBE_MDIO>;
-+			pinmux = <PINMUX_GPIO143__FUNC_O_GBE_MDC>,		// AA6
-+				 <PINMUX_GPIO144__FUNC_B1_GBE_MDIO>;		// AC6
- 			drive-strength = <MTK_DRIVE_8mA>;
- 			input-enable;
- 		};
--		pins-power {
--			pinmux = <PINMUX_GPIO145__FUNC_B_GPIO145>,
--				 <PINMUX_GPIO146__FUNC_B_GPIO146>;
--			output-high;
--		};
- 	};
- 
- 	eth_sleep_pins: eth-sleep-pins {
-@@ -570,7 +529,9 @@ pins {
- 	uart1_pins: uart1-pins {
- 		pins {
- 			pinmux = <PINMUX_GPIO33__FUNC_O_UTXD1>,
--				 <PINMUX_GPIO34__FUNC_I1_URXD1>;
-+				 <PINMUX_GPIO34__FUNC_I1_URXD1>,
-+				 <PINMUX_GPIO88__FUNC_O_URTS1>,
-+				 <PINMUX_GPIO89__FUNC_I1_UCTS1>;
- 			bias-pull-up;
- 		};
- 	};
-@@ -578,7 +539,17 @@ pins {
- 	uart2_pins: uart2-pins {
- 		pins {
- 			pinmux = <PINMUX_GPIO35__FUNC_O_UTXD2>,
--				 <PINMUX_GPIO36__FUNC_I1_URXD2>;
-+				 <PINMUX_GPIO36__FUNC_I1_URXD2>,
-+				 <PINMUX_GPIO86__FUNC_O_URTS2>,
-+				 <PINMUX_GPIO87__FUNC_I1_UCTS2>;
-+			bias-pull-up;
-+		};
-+	};
-+
-+	uart3_pins: uart3-pins {
-+		pins {
-+			pinmux = <PINMUX_GPIO90__FUNC_O_UTXD3>,
-+				 <PINMUX_GPIO91__FUNC_I1_URXD3>;
- 			bias-pull-up;
- 		};
- 	};
-@@ -588,7 +559,8 @@ pins-bus {
- 			pinmux = <PINMUX_GPIO56__FUNC_B1_SDA0>,
- 				 <PINMUX_GPIO55__FUNC_B1_SCL0>;
- 			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
--			mediatek,drive-strength-adv = <7>;
-+			// mediatek,drive-strength-adv = <7>;
-+			drive-strength = <MTK_DRIVE_6mA>;
- 		};
- 	};
- 
-@@ -646,11 +618,10 @@ pins-bus {
- 		};
- 	};
- 
--	rt1715_int: rt1715_int_pin {
--		pins_cmd0_dat {
--			pinmux = <PINMUX_GPIO12__FUNC_B_GPIO12>;
--			bias-pull-up;
--			input-enable;
++	
++	/* 20250905 */
 +	tlv320_aud_rst: tlv320-aud-rst {
 +		pins-rst {
 +			pinmux = <PINMUX_GPIO6__FUNC_B_GPIO6>;
 +			output-high;
++		};
++	};
++	
+ 	audio_default_pins: audio-default-pins {
+ 		pins-cmd-dat {
+ 			pinmux = <PINMUX_GPIO101__FUNC_O_AUD_CLK_MOSI>,
+@@ -793,9 +888,9 @@ pins-cmd-dat {
+ 				 <PINMUX_GPIO116__FUNC_B0_I2SO2_WS>,
+ 				 <PINMUX_GPIO117__FUNC_O_I2SO2_D0>,
+ 				 <PINMUX_GPIO118__FUNC_O_I2SO2_D1>,
+-				 <PINMUX_GPIO121__FUNC_B0_PCM_CLK>,
+-				 <PINMUX_GPIO122__FUNC_B0_PCM_SYNC>,
+-				 <PINMUX_GPIO124__FUNC_I0_PCM_DI>,
++				 //<PINMUX_GPIO121__FUNC_B0_PCM_CLK>, /* 20250905 */
++				 //<PINMUX_GPIO122__FUNC_B0_PCM_SYNC>, /* 20250905 */
++				 //<PINMUX_GPIO124__FUNC_I0_PCM_DI>, /* 20250905 */
+ 				 <PINMUX_GPIO125__FUNC_O_DMIC1_CLK>,
+ 				 <PINMUX_GPIO126__FUNC_I0_DMIC1_DAT>,
+ 				 <PINMUX_GPIO128__FUNC_O_DMIC2_CLK>,
+@@ -812,7 +907,8 @@ pins-cmd-dat {
+ 
+ 	edp_panel_3v3_en_pins: edp-panel-3v3-en-pins {
+ 		pins1 {
+-			pinmux = <PINMUX_GPIO15__FUNC_B_GPIO15>;
++			//pinmux = <PINMUX_GPIO15__FUNC_B_GPIO15>; /* 20250905 */
++			pinmux = <PINMUX_GPIO111__FUNC_B_GPIO111>; /* 20250905 */
+ 			output-high;
+ 		};
+ 	};
+@@ -838,7 +934,7 @@ pins-power {
+ 				 <PINMUX_GPIO146__FUNC_B_GPIO146>;
+ 			output-high;
+ 		};
+-
++		
+ 		pins-rxd {
+ 			pinmux = <PINMUX_GPIO135__FUNC_I0_GBE_RXD3>,
+ 				 <PINMUX_GPIO136__FUNC_I0_GBE_RXD2>,
+@@ -891,7 +987,8 @@ pins {
+ 			pinmux = <PINMUX_GPIO56__FUNC_B1_SDA0>,
+ 				 <PINMUX_GPIO55__FUNC_B1_SCL0>;
+ 			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
+-			drive-strength-microamp = <1000>;
++			//drive-strength-microamp = <1000>; /* 20250905 */
++			drive-strength = <MTK_DRIVE_6mA>; /* 20250905 */
  		};
  	};
  
-@@ -664,26 +635,21 @@ pins_kp {
+@@ -900,7 +997,8 @@ pins {
+ 			pinmux = <PINMUX_GPIO58__FUNC_B1_SDA1>,
+ 				 <PINMUX_GPIO57__FUNC_B1_SCL1>;
+ 			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
+-			drive-strength-microamp = <1000>;
++			//drive-strength-microamp = <1000>; /* 20250905 */
++			drive-strength = <MTK_DRIVE_6mA>; /* 20250905 */
+ 		};
+ 	};
  
+@@ -909,7 +1007,8 @@ pins {
+ 			pinmux = <PINMUX_GPIO60__FUNC_B1_SDA2>,
+ 				 <PINMUX_GPIO59__FUNC_B1_SCL2>;
+ 			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
+-			drive-strength-microamp = <1000>;
++			//drive-strength-microamp = <1000>; /* 20250905 */
++			drive-strength = <MTK_DRIVE_6mA>; /* 20250905 */
+ 		};
+ 	};
+ 
+@@ -918,7 +1017,8 @@ pins {
+ 			pinmux = <PINMUX_GPIO62__FUNC_B1_SDA3>,
+ 				 <PINMUX_GPIO61__FUNC_B1_SCL3>;
+ 			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
+-			drive-strength-microamp = <1000>;
++			//drive-strength-microamp = <1000>; /* 20250905 */
++			drive-strength = <MTK_DRIVE_6mA>; /* 20250905 */
+ 		};
+ 	};
+ 
+@@ -927,7 +1027,8 @@ pins {
+ 			pinmux = <PINMUX_GPIO64__FUNC_B1_SDA4>,
+ 				 <PINMUX_GPIO63__FUNC_B1_SCL4>;
+ 			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
+-			drive-strength-microamp = <1000>;
++			//drive-strength-microamp = <1000>; /* 20250905 */
++			drive-strength = <MTK_DRIVE_6mA>; /* 20250905 */
+ 		};
+ 	};
+ 
+@@ -936,7 +1037,8 @@ pins {
+ 			pinmux = <PINMUX_GPIO66__FUNC_B1_SDA5>,
+ 				 <PINMUX_GPIO65__FUNC_B1_SCL5>;
+ 			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
+-			drive-strength-microamp = <1000>;
++			//drive-strength-microamp = <1000>; /* 20250905 */
++			drive-strength = <MTK_DRIVE_6mA>; /* 20250905 */
+ 		};
+ 	};
+ 
+@@ -945,10 +1047,11 @@ pins {
+ 			pinmux = <PINMUX_GPIO68__FUNC_B1_SDA6>,
+ 				 <PINMUX_GPIO67__FUNC_B1_SCL6>;
+ 			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
+-			drive-strength-microamp = <1000>;
++			//drive-strength-microamp = <1000>; /* 20250905 */
++			drive-strength = <MTK_DRIVE_6mA>; /* 20250905 */
+ 		};
+ 	};
+-
++	
+ 	pcie_pins_default: pcie-default {
+ 		mux {
+ 			pinmux = <PINMUX_GPIO47__FUNC_I1_WAKEN>,
+@@ -966,9 +1069,10 @@ pins {
+ 		};
+ 	};
+ 
++	/* 20250905
  	panel_pins_default: panel-pins-default {
  		panel-dcdc {
 -			pinmux = <PINMUX_GPIO45__FUNC_B_GPIO45>;
 +			pinmux = <PINMUX_GPIO8__FUNC_B_GPIO8>;
  			output-low;
  		};
--
--		panel-rst {
--			pinmux = <PINMUX_GPIO25__FUNC_B_GPIO25>;
--			output-high;
--		};
- 	};
  
+@@ -977,19 +1081,24 @@ panel-rst {
+ 			output-high;
+ 		};
+ 	};
++	*/
+ 
++	/* 20250905
  	dsi0_en_pins_default: dsi0-en-pins-default {
  		panel-en {
 -			pinmux = <PINMUX_GPIO111__FUNC_B_GPIO111>;
@@ -394,297 +509,212 @@ index 54b50ce1842c..575626eb79d2 100644
  			output-low;
  		};
  	};
++	*/
  
++	/* 20250905
  	disp_pwm1_pin_default: disp-pwm1-pin-default {
  		pins1 {
 -			pinmux = <PINMUX_GPIO30__FUNC_O_DISP_PWM1>;
 +			pinmux = <PINMUX_GPIO29__FUNC_O_DISP_PWM0>;
  		};
  	};
++	*/
  
-@@ -794,77 +760,6 @@ pins-clk {
+ 	mmc0_default_pins: mmc0-default-pins {
+ 		pins-clk {
+@@ -1098,6 +1207,7 @@ pins-cmd-dat {
  		};
  	};
  
--	mmc2_pins_default: mmc2default {
--		pins-clk {
--			pinmux = <PINMUX_GPIO170__FUNC_B1_MSDC2_CLK>;
--			drive-strength = <MTK_DRIVE_4mA>;
--			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
--		};
--
--		pins-cmd-dat {
--			pinmux = <PINMUX_GPIO169__FUNC_B1_MSDC2_CMD>,
--				 <PINMUX_GPIO171__FUNC_B1_MSDC2_DAT0>,
--				 <PINMUX_GPIO172__FUNC_B1_MSDC2_DAT1>,
--				 <PINMUX_GPIO173__FUNC_B1_MSDC2_DAT2>,
--				 <PINMUX_GPIO174__FUNC_B1_MSDC2_DAT3>;
--			input-enable;
--			drive-strength = <MTK_DRIVE_6mA>;
--			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
--		};
--
--		pins-pcm {
--			pinmux = <PINMUX_GPIO123__FUNC_O_PCM_DO>;
--		};
--
--		wcn-3v3-en {
--			pinmux = <PINMUX_GPIO74__FUNC_B_GPIO74>;
--			output-high;
--		};
--	};
--
--	mmc2_pins_uhs: mmc2uhs {
--		pins-clk {
--			pinmux = <PINMUX_GPIO170__FUNC_B1_MSDC2_CLK>;
--			drive-strength = <MTK_DRIVE_4mA>;
--			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
--		};
--
--		pins-cmd-dat {
--			pinmux = <PINMUX_GPIO169__FUNC_B1_MSDC2_CMD>,
--				 <PINMUX_GPIO171__FUNC_B1_MSDC2_DAT0>,
--				 <PINMUX_GPIO172__FUNC_B1_MSDC2_DAT1>,
--				 <PINMUX_GPIO173__FUNC_B1_MSDC2_DAT2>,
--				 <PINMUX_GPIO174__FUNC_B1_MSDC2_DAT3>;
--			input-enable;
--			drive-strength = <MTK_DRIVE_6mA>;
--			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
--		};
--	};
--
--	mmc2_pins_eint: dat1-eint {
--		pins-dat1 {
--			pinmux = <PINMUX_GPIO172__FUNC_B_GPIO172>;
--			input-enable;
--			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
--		};
--	};
--
--	mmc2_pins_dat1: sdio-dat1 {
--		pins-dat1 {
--			pinmux = <PINMUX_GPIO172__FUNC_B1_MSDC2_DAT1>;
--			input-enable;
--			drive-strength = <MTK_DRIVE_6mA>;
--			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
--		};
--	};
--
--	wifi_pins_pwrseq: wifipwrseq {
--		pins-wifi-enable {
--			pinmux = <PINMUX_GPIO72__FUNC_B_GPIO72>;
--			output-low;
--		};
--	};
--
++	/* 20250905
+ 	mmc2_default_pins: mmc2-default-pins {
+ 		pins-clk {
+ 			pinmux = <PINMUX_GPIO170__FUNC_B1_MSDC2_CLK>;
+@@ -1126,7 +1236,9 @@ wcn-3v3-en {
+ 		};
+ 
+ 	};
++	*/
+ 
++	/* 20250905
+ 	mmc2_uhs_pins: mmc2-uhs-pins {
+ 		pins-clk {
+ 			pinmux = <PINMUX_GPIO170__FUNC_B1_MSDC2_CLK>;
+@@ -1145,7 +1257,9 @@ pins-cmd-dat {
+ 			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+ 		};
+ 	};
++	*/
+ 
++	/* 20250905
+ 	mmc2_eint_pins: mmc2-eint-pins {
+ 		pins-dat1 {
+ 			pinmux = <PINMUX_GPIO172__FUNC_B_GPIO172>;
+@@ -1153,7 +1267,9 @@ pins-dat1 {
+ 			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+ 		};
+ 	};
++	*/
+ 
++	/* 20250905
+ 	mmc2_dat1_pins: mmc2-dat1-pins {
+ 		pins-dat1 {
+ 			pinmux = <PINMUX_GPIO172__FUNC_B1_MSDC2_DAT1>;
+@@ -1162,7 +1278,9 @@ pins-dat1 {
+ 			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+ 		};
+ 	};
++	*/
+ 
++	/* 20250905
+ 	panel_default_pins: panel-default-pins {
+ 		pins-dcdc {
+ 			pinmux = <PINMUX_GPIO45__FUNC_B_GPIO45>;
+@@ -1179,7 +1297,9 @@ pins-rst {
+ 			output-high;
+ 		};
+ 	};
++	*/
+ 
++	/* 20250905
+ 	rt1715_int_pins: rt1715-int-pins {
+ 		pins_cmd0_dat {
+ 			pinmux = <PINMUX_GPIO12__FUNC_B_GPIO12>;
+@@ -1187,6 +1307,7 @@ pins_cmd0_dat {
+ 			input-enable;
+ 		};
+ 	};
++	*/
+ 
  	spi0_pins: spi0-pins {
  		pins-spi {
- 			pinmux = <PINMUX_GPIO69__FUNC_O_SPIM0_CSB>,
-@@ -895,6 +790,13 @@ pins-spi {
+@@ -1217,7 +1338,16 @@ pins-spi {
+ 			bias-disable;
  		};
  	};
- 
++	
++	/* 20250905 */
 +	npct75x_tpm_pin: npct75x-tpm-pin {
 +		tpm_rst: tpm-rst {
 +			pinmux = <PINMUX_GPIO24__FUNC_B_GPIO24>;
 +			output-high;
 +		};
 +	};
-+
- 	pcie_pins_default: pcie-default {
- 		mux {
- 			pinmux = <PINMUX_GPIO47__FUNC_I1_WAKEN>,
-@@ -911,67 +813,49 @@ iddig-pin {
- 			bias-pull-up;
- 		};
  
--		vbus-pins {
--			pinmux = <PINMUX_GPIO84__FUNC_O_USB_DRVVBUS>;
--			output-high;
--		};
--
- 		valid-pin {
- 			pinmux = <PINMUX_GPIO85__FUNC_I0_VBUSVALID>;
- 			input-enable;
++	/* 20250905
+ 	touch_pins: touch-pins {
+ 		pins-irq {
+ 			pinmux = <PINMUX_GPIO6__FUNC_B_GPIO6>;
+@@ -1230,6 +1360,7 @@ pins-reset {
+ 			output-high;
  		};
  	};
++	*/
  
--	usb1_default: usbp1default {
--		valid_pin {
--			pinmux = <PINMUX_GPIO88__FUNC_I0_VBUSVALID_1P>;
--			input-enable;
--		};
+ 	uart0_pins: uart0-pins {
+ 		pins {
+@@ -1242,7 +1373,9 @@ pins {
+ 	uart1_pins: uart1-pins {
+ 		pins {
+ 			pinmux = <PINMUX_GPIO33__FUNC_O_UTXD1>,
+-				 <PINMUX_GPIO34__FUNC_I1_URXD1>;
++				 <PINMUX_GPIO34__FUNC_I1_URXD1>,
++				 <PINMUX_GPIO88__FUNC_O_URTS1>,    /* 20250905 */
++				 <PINMUX_GPIO89__FUNC_I1_UCTS1>;   /* 20250905 */
+ 			bias-pull-up;
+ 		};
+ 	};
+@@ -1250,10 +1383,20 @@ pins {
+ 	uart2_pins: uart2-pins {
+ 		pins {
+ 			pinmux = <PINMUX_GPIO35__FUNC_O_UTXD2>,
+-				 <PINMUX_GPIO36__FUNC_I1_URXD2>;
++				 <PINMUX_GPIO36__FUNC_I1_URXD2>,
++				 <PINMUX_GPIO86__FUNC_O_URTS2>,    /* 20250905 */
++				 <PINMUX_GPIO87__FUNC_I1_UCTS2>;   /* 20250905 */
+ 			bias-pull-up;
+ 		};
+ 	};
++	
++	/* 20250905 */
++	uart3_pins: uart3-pins {
++		pins {
++			pinmux = <PINMUX_GPIO90__FUNC_O_UTXD3>,
++				 <PINMUX_GPIO91__FUNC_I1_URXD3>;
++		};
++	};
+ 
+ 	usb_default_pins: usb-default-pins {
+ 		pins-iddig {
+@@ -1267,13 +1410,15 @@ pins-valid {
+ 			input-enable;
+ 		};
+ 
++		/* 20250905
+ 		pins-vbus {
+ 			pinmux = <PINMUX_GPIO84__FUNC_O_USB_DRVVBUS>;
+ 			output-high;
+ 		};
 -
--		usb-hub-3v3-en-pin {
--			pinmux = <PINMUX_GPIO112__FUNC_B_GPIO112>;
--			output-high;
--		};
--	};
++		*/
+ 	};
+ 
++	/* 20250905
+ 	usb1_default_pins: usb1-default-pins {
+ 		pins-valid {
+ 			pinmux = <PINMUX_GPIO88__FUNC_I0_VBUSVALID_1P>;
+@@ -1285,16 +1430,46 @@ pins-usb-hub-3v3-en {
+ 			output-high;
+ 		};
+ 	};
++	*/
+ 
++	/* 20250905
+ 	wifi_pwrseq_pins: wifi-pwrseq-pins {
+ 		pins-wifi-enable {
+ 			pinmux = <PINMUX_GPIO72__FUNC_B_GPIO72>;
+ 			output-low;
+ 		};
+ 	};
++	*/
++	
++	/* 20250905 */
++	/*
 +	pwr_ctrl_gpio_pins: pwr-ctrl-gpio-pins {
 +		carrier_pwr_on_gpio_pin: carrier-pwr-on-gpio-pin{
 +			pinmux = <PINMUX_GPIO121__FUNC_B_GPIO121>; // AD30
 + 			output-high;
 + 		};
- 
--	touch_pins: touchdefault {
--		touch_pin_irq: pin-irq {
--			pinmux = <PINMUX_GPIO6__FUNC_B_GPIO6>;
--			input-enable;
--			bias-disable;
--		};
++
 +		carrier_stby_gpio_pin: carrier-stby-gpio-pin{
 +			pinmux = <PINMUX_GPIO27__FUNC_B_GPIO27>; // AA11
 + 			output-high;
 + 		};
- 
--		touch_pin_reset: pin-reset {
--			pinmux = <PINMUX_GPIO5__FUNC_B_GPIO5>;
++
 +		power_supply_1v8_en_pin: power-supply-1v8-en-pin {
 +			pinmux = <PINMUX_GPIO145__FUNC_B_GPIO145>;		// AC7 1.8V Power Supply
- 			output-high;
- 		};
--	};
- 
--	lcm1_tp_avdd_pin: lcm1-tp-avdd-pin {
--		lcm1_tp_en: lcm1-tp-en{
--			pinmux = <PINMUX_GPIO120__FUNC_B_GPIO120>;
++			output-high;
++		};
++
 +		power_supply_3v3_en_pin: power-supply-3v3-en-pin {
 +			pinmux = <PINMUX_GPIO146__FUNC_B_GPIO146>;			// AB4 3.3V Power Supply
- 			output-high;
- 		};
--	};
++			output-high;
++		};
 + 	};
- };
- 
- &i2c0 {
- 	pinctrl-names = "default";
--	pinctrl-0 = <&i2c0_pin>;
-+	pinctrl-0 = <&i2c0_pin &tlv320_aud_rst>;
- 	clock-frequency = <400000>;
- 	status = "okay";
--	touchscreen@5d {
--		compatible = "goodix,gt9271";
--		reg = <0x5d>;
--		interrupt-parent = <&pio>;
--		interrupts = <6 IRQ_TYPE_EDGE_RISING>;
--		irq-gpios = <&pio 6 GPIO_ACTIVE_HIGH>;
--		reset-gpios = <&pio 5 GPIO_ACTIVE_HIGH>;
--		AVDD28-supply = <&lcm1_tp_avdd>;
--		VDDIO-supply = <&mt6359_vio18_ldo_reg>;
--		pinctrl-names = "default";
--		pinctrl-0 = <&touch_pins>;
--	};
-+
-+	tlv320aic3106: audio-codec@1b {
-+		#sound-dai-cells = <0>;
-+		compatible = "ti,tlv320aic3106";
-+		reg = <0x1b>;
-+		ai3x-micbias-vg = <1>;
-+		status = "okay";
-+		reset-gpios = <&pio 6 GPIO_ACTIVE_LOW>;
-+ 	};
- };
- 
- &i2c1 {
-@@ -979,14 +863,6 @@ &i2c1 {
- 	pinctrl-0 = <&i2c1_pin>;
- 	clock-frequency = <400000>;
- 	status = "okay";
--
--	it5205fn: it5205fn@48 {
--		compatible = "mediatek,it5205fn";
--		reg = <0x48>;
--		type3v3-supply = <&mt6359_vcn33_1_bt_ldo_reg>;
--		svid = /bits/ 16 <0xff01>;
--		status = "okay";
--	};
- };
- 
- &i2c2 {
-@@ -1006,53 +882,12 @@ &i2c3 {
- &i2c4 {
- 	pinctrl-names = "default", "default";
- 	pinctrl-0 = <&i2c4_pin>;
--	pinctrl-1 = <&rt1715_int>;
- 	clock-frequency = <1000000>;
- 	status = "okay";
- 
--	rt1715@4e {
--		compatible = "richtek,rt1715";
--		reg = <0x4e>;
--		interrupts-extended = <&pio 12 IRQ_TYPE_LEVEL_LOW>;
--		vbus-supply = <&usb_p1_vbus>;
--		status = "okay";
--
--		usb_con: connector {
--			compatible = "usb-c-connector";
--			label = "USB-C";
--			data-role = "dual";
--			power-role = "dual";
--			try-power-role = "sink";
--			source-pdos = <PDO_FIXED(5000, 2000, PDO_FIXED_DUAL_ROLE |
--							PDO_FIXED_DATA_SWAP)>;
--			sink-pdos = <PDO_FIXED(5000, 2000, PDO_FIXED_DUAL_ROLE |
--							PDO_FIXED_DATA_SWAP)>;
--			op-sink-microwatt = <10000000>;
--			orientation-switch = <&it5205fn>;
--			mode-switch = <&it5205fn>;
--			displayport = <&dp_intf1>;
--
--			altmodes {
--				dp {
--					svid = <0x0ff01>;
--					vdo = <0x1c1c47>;
--				};
--			};
--
--			ports {
--				#address-cells = <1>;
--				#size-cells = <0>;
--
--				port@0 {
--					reg = <0>;
--					tcpc_typec_usb: endpoint {
--							remote-endpoint = <&ssusb1_ep>;
--					};
--				};
--			};
--		};
--
--		port {};
-+	pcf85063: pcf85063@51 {
-+    	compatible = "nxp,pcf85063";
-+    	reg = <0x51>;
- 	};
- };
- 
-@@ -1068,9 +903,22 @@ &i2c6 {
- 	pinctrl-0 = <&i2c6_pin>;
- 	clock-frequency = <400000>;
- 	status = "okay";
-+
-+	baseboard_eeprom: baseboard_eeprom@57 {
-+		compatible = "atmel,24c02";
-+		label = "AT24C02D";
-+		reg = <0x57>;
-+		pagesize = <8>;
-+		size = <256>;
-+		address-width = <8>;
-+		num-addresses = <1>;
-+	};
++	*/
  };
  
  &pmic {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pwr_ctrl_gpio_pins>;
-+
++	//pinctrl-names = "default"; /* 20250905 */
++	//pinctrl-0 = <&pwr_ctrl_gpio_pins>; /* 20250905 */
  	interrupt-parent = <&pio>;
  	interrupts = <222 IRQ_TYPE_LEVEL_HIGH>;
- 
-@@ -1159,6 +1007,12 @@ &uart2 {
+ };
+@@ -1323,17 +1498,64 @@ &uart2 {
  	status = "okay";
  };
  
++/* 20250905 */
 +&uart3 {
 +	pinctrl-0 = <&uart3_pins>;
 +	pinctrl-names = "default";
@@ -692,69 +722,35 @@ index 54b50ce1842c..575626eb79d2 100644
 +};
 +
  &mipi_tx0 {
- 	status = "okay";
- };
-@@ -1208,56 +1062,53 @@ &mt6359_vsim1_ldo_reg {
- 	regulator-enable-ramp-delay = <480>;
- };
- 
--&wifi_pwrseq {
--	status = "okay";
-+&mt6359_vcn18_ldo_reg {
-+	regulator-always-on;
+-	status = "disabled";
++	status = "okay"; /* 20250905 */
 +};
 +
++/* 20250905 */
 +&spi0 {
 +	pinctrl-0 = <&spi0_pins>;
- 	pinctrl-names = "default";
--	pinctrl-0 = <&wifi_pins_pwrseq>;
++	pinctrl-names = "default";
 +	mediatek,pad-select = <0>;
 +	#address-cells = <1>;
 +	#size-cells = <0>;
 +	status = "okay";
- 
--	reset-gpios = <&pio 72 1>;
--	post-power-on-delay-ms = <200>;
++
 +	spidev@0 {
 + 		compatible = "mediatek,aiot-board";
 +		spi-max-frequency = <50000000>;
 +		reg = <0>;
 +	};
- };
- 
--&mmc2 {
++};
++
++/* 20250905 */
 +&spi1 {
 +	pinctrl-0 = <&spi1_pins>;
 +	pinctrl-names = "default";
 +	mediatek,pad-select = <0>;
 +	#address-cells = <1>;
 +	#size-cells = <0>;
- 	status = "okay";
--	pinctrl-names = "default", "state_uhs", "state_eint",
--					"state_dat1";
--	pinctrl-0 = <&mmc2_pins_default>;
--	pinctrl-1 = <&mmc2_pins_uhs>;
--	pinctrl-2 = <&mmc2_pins_eint>;
--	pinctrl-3 = <&mmc2_pins_dat1>;
--	eint-gpios = <&pio 172 0>;
--	bus-width = <4>;
--	max-frequency = <200000000>;
--	cap-sd-highspeed;
--	sd-uhs-sdr104;
--	keep-power-in-suspend;
--	enable-sdio-wakeup;
--	cap-sdio-async-int;
--	cap-sdio-irq;
--	no-mmc;
--	no-sd;
--	non-removable;
--	vmmc-supply = <&sdio_fixed_3v3>;
--	vqmmc-supply = <&sdio_fixed_1v8>;
--	mmc-pwrseq = <&wifi_pwrseq>;
--};
- 
--&mt6359_vcn18_ldo_reg {
--	regulator-always-on;
++	status = "okay";
++
 +	spidev@0 {
 +		compatible = "mediatek,aiot-board";
 +		spi-max-frequency = <50000000>;
@@ -764,147 +760,378 @@ index 54b50ce1842c..575626eb79d2 100644
  
  &spi2 {
 -	pinctrl-0 = <&spi2_pins>;
-+	pinctrl-0 = <&spi2_pins &npct75x_tpm_pin>;
++	//pinctrl-0 = <&spi2_pins>; /* 20250905 */
++	pinctrl-0 = <&spi2_pins &npct75x_tpm_pin>; /* 20250905 */
  	pinctrl-names = "default";
  	mediatek,pad-select = <0>;
  	#address-cells = <1>;
  	#size-cells = <0>;
  	status = "okay";
- 
--	spidev@0 {
--		compatible = "mediatek,aiot-board";
--		spi-max-frequency = <5000000>;
++	
 +	tpm: npct75x@0 {
 +		compatible = "tcg,tpm_tis-spi";
- 		reg = <0>;
++		reg = <0>;
 +		spi-max-frequency = <1000000>;
 +		reset-gpios = <&pio 24 GPIO_ACTIVE_LOW>;
- 	};
++	};
  };
  
-@@ -1303,6 +1154,7 @@ &pcie {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pcie_pins_default>;
- 	status = "okay";
-+	// compliance-test = "enabled"; // add for pcie eye pattern force output
- };
- 
- &pciephy {
-@@ -1323,7 +1175,6 @@ connector {
+ &spmi {
+@@ -1403,7 +1625,7 @@ connector {
  		compatible = "gpio-usb-b-connector", "usb-b-connector";
  		type = "micro";
  		id-gpios = <&pio 83 GPIO_ACTIVE_HIGH>;
 -		vbus-supply = <&usb_p0_vbus>;
++		//vbus-supply = <&usb_p0_vbus>; /* 20250905 */
  	};
  };
  
-@@ -1341,7 +1192,6 @@ &usb_host0 {
+@@ -1417,20 +1639,23 @@ &xhci0 {
  };
  
  &ssusb1 {
--	pinctrl-0 = <&usb1_default>;
+-	pinctrl-0 = <&usb1_default_pins>;
++	//pinctrl-0 = <&usb1_default_pins>; /* 20250905 */
  	pinctrl-names = "default";
  	vusb33-supply = <&mt6359_vusb_ldo_reg>;
- 	dr_mode = "host";
-@@ -1349,12 +1199,6 @@ &ssusb1 {
+-	dr_mode = "otg";
++	//dr_mode = "otg"; /* 20250905 */
++	dr_mode = "host";  /* 20250905 */
+ 	mediatek,usb3-drd;
  	usb-role-switch;
  	status = "okay";
  	wakeup-source;
--
--	port {
--		ssusb1_ep: endpoint {
--			remote-endpoint = <&tcpc_typec_usb>;
--		};
--	};
+ 
++	/* 20250905
+ 	port {
+ 		ssusb1_ep: endpoint {
+ 			remote-endpoint = <&tcpc_typec_usb>;
+ 		};
+ 	};
++	*/
  };
  
  &u2port1 {
-@@ -1372,7 +1216,6 @@ &u3phy1 {
- &usb_host1 {
+@@ -1444,7 +1669,7 @@ &u3port1 {
+ &xhci1 {
  	status = "okay";
  	vusb33-supply = <&mt6359_vusb_ldo_reg>;
--	vbus-supply = <&onboard_hub>;
+-	vbus-supply = <&usb_hub_reset_1v8>;
++	//vbus-supply = <&usb_hub_reset_1v8>; /* 20250905 */
  };
  
  &ssusb2 {
-@@ -1382,13 +1225,6 @@ &ssusb2 {
- 	vusb33-supply = <&mt6359_vusb_ldo_reg>;
+@@ -1462,7 +1687,7 @@ &u2port2 {
+ 
+ &xhci2 {
  	status = "okay";
- 	wakeup-source;
--
--	connector {
--		compatible = "gpio-usb-b-connector", "usb-b-connector";
--		type = "micro";
--		id-gpios = <&pio 89 GPIO_ACTIVE_HIGH>;
--		vbus-supply = <&usb_p2_vbus>;
--	};
- };
- 
- &u2port2 {
-@@ -1458,7 +1294,7 @@ codec-0 {
- 	dai-link-2 {
- 		sound-dai = <&afe>;
- 		dai-link-name = "DPTX_BE";
--		status = "disabled";
-+		status = "okay";
- 
- 		codec-0 {
- 			sound-dai = <&dp_tx>;
-@@ -1474,6 +1310,26 @@ codec-0 {
- 			sound-dai = <&dmic_codec>;
- 		};
- 	};
-+
-+	dai-link-4 {
-+		sound-dai = <&afe>;
-+		dai-link-name = "ETDM2_OUT_BE";
-+		status = "okay";
-+
-+		codec-0 {
-+			sound-dai = <&tlv320aic3106>;
-+		};
-+	};
-+
-+	dai-link-5 {
-+		sound-dai = <&afe>;
-+		dai-link-name = "ETDM2_IN_BE";
-+		status = "okay";
-+
-+		codec-0 {
-+			sound-dai = <&tlv320aic3106>;
-+		};
-+	};
+-	vusb33-supply = <&mt6359_vusb_ldo_reg>;
++	//vusb33-supply = <&mt6359_vusb_ldo_reg>; /* 20250905 */
  };
  
  &cam_vcore {
+@@ -1478,6 +1703,7 @@ &accdet {
+ };
+ 
+ &afe {
++	mediatek,etdm-in2-cowork-source = <3>; /*20250905 */
+ 	#sound-dai-cells = <0>;
+ 	memory-region = <&afe_dma_mem_reserved>;
+ 	mediatek,dmic-iir-on;
+@@ -1535,7 +1761,7 @@ codec {
+ 	dai-link-3 {
+ 		sound-dai = <&afe>;
+ 		link-name = "ETDM3_OUT_BE";
+-		status = "disabled";
++		status = "okay"; /*20250905 */
+ 
+ 		codec {
+ 			sound-dai = <&hdmi0>;
+@@ -1545,10 +1771,32 @@ codec {
+ 	dai-link-4 {
+ 		sound-dai = <&afe>;
+ 		link-name = "DPTX_BE";
+-		status = "disabled";
++		status = "okay"; /* 20250905 */
+ 
+ 		codec {
+ 			sound-dai = <&dp_tx>;
+ 		};
+ 	};
++	
++	/* 20250905 */
++	dai-link-5 {
++		sound-dai = <&afe>;
++		link-name = "ETDM2_OUT_BE";
++		status = "okay";
++
++		codec {
++			sound-dai = <&tlv320aic3106>;
++		};
++	};
++	
++	/* 20250905 */
++	dai-link-6 {
++		sound-dai = <&afe>;
++		link-name = "ETDM2_IN_BE";
++		status = "okay";
++
++		codec {
++			sound-dai = <&tlv320aic3106>;
++		};
++	};
+ };
 diff --git a/arch/arm64/boot/dts/mediatek/mt8370.dtsi b/arch/arm64/boot/dts/mediatek/mt8370.dtsi
-index 02272e2f2d1e..e505b0bf4159 100644
+index 1f83a293d543..f67883aa80cf 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8370.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8370.dtsi
-@@ -2949,13 +2949,15 @@ soc-max {
+@@ -443,13 +443,15 @@ cpu-little0-thermal {
  
- 				trips {
- 					threshold: trip-point@0 {
--						temperature = <68000>;
-+						// temperature = <68000>;
-+						temperature = <115000>; // edit for chamber test
- 						hysteresis = <2000>;
- 						type = "passive";
- 					};
+ 			trips {
+ 				cpu_little0_switch_on: trip-switch-on0 {
+-					temperature = <68000>;
++					//temperature = <68000>;
++					temperature = <115000>; //20250905
+ 					hysteresis = <2000>;
+ 					type = "passive";
+ 				};
  
- 					target: target@1 {
--						temperature = <85000>;
-+						// temperature = <85000>;
-+						temperature = <115000>; // edit for chamber test
- 						hysteresis = <2000>;
- 						type = "passive";
- 					};
+ 				cpu_little0_alert0: trip-alert0 {
+-					temperature = <85000>;
++					//temperature = <85000>;
++					temperature = <115000>; //20250905
+ 					hysteresis = <2000>;
+ 					type = "passive";
+ 				};
+@@ -1817,6 +1819,7 @@ eth: ethernet@11021000 {
+ 			reg = <0 0x11021000 0 0x4000>;
+ 			interrupts = <GIC_SPI 716 IRQ_TYPE_LEVEL_HIGH 0>;
+ 			interrupt-names = "macirq";
++			mac-address = [00 55 7b b5 7d f7];
+ 			clock-names = "axi",
+ 				      "apb",
+ 				      "mac_cg",
 diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 5b5de83c6183..d09339830c01 100644
+index 5aac741453dc..f7435349922c 100644
 --- a/arch/arm64/configs/defconfig
 +++ b/arch/arm64/configs/defconfig
-@@ -273,7 +273,7 @@ CONFIG_VIRTIO_BLK=y
+@@ -1,3 +1,4 @@
++CONFIG_LOCALVERSION="-mtk+g778343d9829d"
+ CONFIG_SYSVIPC=y
+ CONFIG_POSIX_MQUEUE=y
+ CONFIG_AUDIT=y
+@@ -5,19 +6,23 @@ CONFIG_NO_HZ_IDLE=y
+ CONFIG_HIGH_RES_TIMERS=y
+ CONFIG_BPF_SYSCALL=y
+ CONFIG_BPF_JIT=y
++CONFIG_BPF_LSM=y
+ CONFIG_PREEMPT=y
+ CONFIG_IRQ_TIME_ACCOUNTING=y
+ CONFIG_BSD_PROCESS_ACCT=y
+ CONFIG_BSD_PROCESS_ACCT_V3=y
+ CONFIG_TASKSTATS=y
++CONFIG_TASK_DELAY_ACCT=y
+ CONFIG_TASK_XACCT=y
+ CONFIG_TASK_IO_ACCOUNTING=y
+ CONFIG_IKCONFIG=y
+ CONFIG_IKCONFIG_PROC=y
++CONFIG_IKHEADERS=y
+ CONFIG_NUMA_BALANCING=y
+ CONFIG_MEMCG=y
+ CONFIG_BLK_CGROUP=y
+ CONFIG_CGROUP_PIDS=y
++CONFIG_CGROUP_RDMA=y
+ CONFIG_CGROUP_FREEZER=y
+ CONFIG_CGROUP_HUGETLB=y
+ CONFIG_CPUSETS=y
+@@ -25,11 +30,15 @@ CONFIG_CGROUP_DEVICE=y
+ CONFIG_CGROUP_CPUACCT=y
+ CONFIG_CGROUP_PERF=y
+ CONFIG_CGROUP_BPF=y
++CONFIG_CGROUP_MISC=y
+ CONFIG_USER_NS=y
+ CONFIG_SCHED_AUTOGROUP=y
+ CONFIG_BLK_DEV_INITRD=y
+ CONFIG_KALLSYMS_ALL=y
+ CONFIG_PROFILING=y
++CONFIG_KEXEC=y
++CONFIG_KEXEC_FILE=y
++CONFIG_CRASH_DUMP=y
+ CONFIG_ARCH_ACTIONS=y
+ CONFIG_ARCH_SUNXI=y
+ CONFIG_ARCH_ALPINE=y
+@@ -77,9 +86,6 @@ CONFIG_ARM64_VA_BITS_48=y
+ CONFIG_SCHED_MC=y
+ CONFIG_SCHED_SMT=y
+ CONFIG_NUMA=y
+-CONFIG_KEXEC=y
+-CONFIG_KEXEC_FILE=y
+-CONFIG_CRASH_DUMP=y
+ CONFIG_XEN=y
+ CONFIG_COMPAT=y
+ CONFIG_RANDOMIZE_BASE=y
+@@ -100,6 +106,7 @@ CONFIG_ARM_ARMADA_37XX_CPUFREQ=y
+ CONFIG_ARM_SCPI_CPUFREQ=y
+ CONFIG_ARM_IMX_CPUFREQ_DT=m
+ CONFIG_ARM_MEDIATEK_CPUFREQ=y
++CONFIG_ARM_MEDIATEK_CPUFREQ_HW=y
+ CONFIG_ARM_QCOM_CPUFREQ_NVMEM=y
+ CONFIG_ARM_QCOM_CPUFREQ_HW=y
+ CONFIG_ARM_RASPBERRYPI_CPUFREQ=m
+@@ -116,10 +123,10 @@ CONFIG_ACPI_APEI_MEMORY_FAILURE=y
+ CONFIG_ACPI_APEI_EINJ=y
+ CONFIG_VIRTUALIZATION=y
+ CONFIG_KVM=y
++CONFIG_KPROBES=y
+ CONFIG_JUMP_LABEL=y
+ CONFIG_MODULES=y
+ CONFIG_MODULE_UNLOAD=y
+-CONFIG_IOSCHED_BFQ=y
+ # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
+ # CONFIG_COMPAT_BRK is not set
+ CONFIG_MEMORY_HOTPLUG=y
+@@ -129,13 +136,15 @@ CONFIG_MEMORY_FAILURE=y
+ CONFIG_TRANSPARENT_HUGEPAGE=y
+ CONFIG_NET=y
+ CONFIG_PACKET=y
+-CONFIG_UNIX=y
+-CONFIG_INET=y
++CONFIG_XDP_SOCKETS=y
++CONFIG_XDP_SOCKETS_DIAG=y
+ CONFIG_IP_MULTICAST=y
+ CONFIG_IP_PNP=y
+ CONFIG_IP_PNP_DHCP=y
+ CONFIG_IP_PNP_BOOTP=y
+ CONFIG_IPV6=m
++CONFIG_IPV6_SUBTREES=y
++CONFIG_IPV6_SEG6_LWTUNNEL=y
+ CONFIG_NETFILTER=y
+ CONFIG_BRIDGE_NETFILTER=m
+ CONFIG_NF_CONNTRACK=m
+@@ -162,26 +171,33 @@ CONFIG_IP6_NF_TARGET_MASQUERADE=m
+ CONFIG_BRIDGE=m
+ CONFIG_BRIDGE_VLAN_FILTERING=y
+ CONFIG_NET_DSA=m
+-CONFIG_VLAN_8021Q=m
++CONFIG_VLAN_8021Q=y
+ CONFIG_VLAN_8021Q_GVRP=y
+ CONFIG_VLAN_8021Q_MVRP=y
+ CONFIG_NET_SCHED=y
+-CONFIG_NET_SCH_CBS=m
+-CONFIG_NET_SCH_ETF=m
+-CONFIG_NET_SCH_TAPRIO=m
++CONFIG_NET_SCH_MULTIQ=y
++CONFIG_NET_SCH_CBS=y
++CONFIG_NET_SCH_ETF=y
++CONFIG_NET_SCH_TAPRIO=y
+ CONFIG_NET_SCH_MQPRIO=m
+ CONFIG_NET_SCH_INGRESS=m
+ CONFIG_NET_CLS_BASIC=m
++CONFIG_NET_CLS_U32=y
++CONFIG_NET_CLS_BPF=m
+ CONFIG_NET_CLS_FLOWER=m
+ CONFIG_NET_CLS_ACT=y
+ CONFIG_NET_ACT_GACT=m
+ CONFIG_NET_ACT_MIRRED=m
++CONFIG_NET_ACT_SKBEDIT=y
++CONFIG_NET_ACT_BPF=m
+ CONFIG_NET_ACT_GATE=m
+ CONFIG_QRTR_SMD=m
+ CONFIG_QRTR_TUN=m
++CONFIG_CGROUP_NET_PRIO=y
++CONFIG_CGROUP_NET_CLASSID=y
++CONFIG_BPF_STREAM_PARSER=y
++CONFIG_NET_PKTGEN=y
+ CONFIG_CAN=m
+-CONFIG_CAN_M_CAN=m
+-CONFIG_CAN_M_CAN_PLATFORM=m
+ CONFIG_BT=m
+ CONFIG_BT_HIDP=m
+ # CONFIG_BT_LE is not set
+@@ -196,9 +212,12 @@ CONFIG_BT_HCIUART_QCA=y
+ CONFIG_BT_HCIUART_MRVL=y
+ CONFIG_BT_MRVL=m
+ CONFIG_BT_MRVL_SDIO=m
++CONFIG_BT_MTKSDIO=m
+ CONFIG_BT_QCOMSMD=m
+ CONFIG_BT_NXPUART=m
+ CONFIG_CFG80211=m
++CONFIG_NL80211_TESTMODE=y
++CONFIG_CFG80211_WEXT=y
+ CONFIG_MAC80211=m
+ CONFIG_MAC80211_LEDS=y
+ CONFIG_RFKILL=m
+@@ -210,32 +229,33 @@ CONFIG_NFC_S3FWRN5_I2C=m
+ CONFIG_PCI=y
+ CONFIG_PCIEPORTBUS=y
+ CONFIG_PCIEAER=y
++CONFIG_PCIEASPM_POWER_SUPERSAVE=y
+ CONFIG_PCI_IOV=y
+ CONFIG_PCI_PASID=y
+ CONFIG_HOTPLUG_PCI=y
+ CONFIG_HOTPLUG_PCI_ACPI=y
+ CONFIG_PCI_AARDVARK=y
+-CONFIG_PCI_TEGRA=y
+-CONFIG_PCIE_RCAR_HOST=y
+-CONFIG_PCIE_RCAR_EP=y
+-CONFIG_PCI_HOST_GENERIC=y
+-CONFIG_PCI_XGENE=y
+ CONFIG_PCIE_ALTERA=y
+ CONFIG_PCIE_ALTERA_MSI=y
++CONFIG_PCIE_BRCMSTB=m
+ CONFIG_PCI_HOST_THUNDER_PEM=y
+ CONFIG_PCI_HOST_THUNDER_ECAM=y
++CONFIG_PCI_HOST_GENERIC=y
++CONFIG_PCIE_MEDIATEK_GEN3=y
++CONFIG_PCI_TEGRA=y
++CONFIG_PCIE_RCAR_HOST=y
++CONFIG_PCIE_RCAR_EP=y
+ CONFIG_PCIE_ROCKCHIP_HOST=m
+-CONFIG_PCIE_MEDIATEK_GEN3=m
+-CONFIG_PCIE_BRCMSTB=m
++CONFIG_PCI_XGENE=y
+ CONFIG_PCI_IMX6_HOST=y
+ CONFIG_PCI_LAYERSCAPE=y
+ CONFIG_PCI_HISI=y
+-CONFIG_PCIE_QCOM=y
+-CONFIG_PCIE_ARMADA_8K=y
+-CONFIG_PCIE_ROCKCHIP_DW_HOST=y
+ CONFIG_PCIE_KIRIN=y
+ CONFIG_PCIE_HISI_STB=y
++CONFIG_PCIE_ARMADA_8K=y
+ CONFIG_PCIE_TEGRA194_HOST=m
++CONFIG_PCIE_QCOM=y
++CONFIG_PCIE_ROCKCHIP_DW_HOST=y
+ CONFIG_PCIE_VISCONTI_HOST=y
+ CONFIG_PCIE_LAYERSCAPE_GEN4=y
+ CONFIG_PCI_ENDPOINT=y
+@@ -247,11 +267,11 @@ CONFIG_FW_LOADER_USER_HELPER=y
+ CONFIG_HISILICON_LPC=y
+ CONFIG_TEGRA_ACONNECT=m
+ CONFIG_MHI_BUS_PCI_GENERIC=m
+-CONFIG_ARM_SCMI_PROTOCOL=y
+ CONFIG_ARM_SCPI_PROTOCOL=y
+ CONFIG_RASPBERRYPI_FIRMWARE=y
+ CONFIG_INTEL_STRATIX10_SERVICE=y
+ CONFIG_INTEL_STRATIX10_RSU=m
++CONFIG_MTK_ADSP_IPC=y
+ CONFIG_EFI_CAPSULE_LOADER=y
+ CONFIG_IMX_SCU=y
+ CONFIG_IMX_SCU_PD=y
+@@ -276,18 +296,16 @@ CONFIG_MTD_NAND_FSL_IFC=y
+ CONFIG_MTD_NAND_QCOM=y
+ CONFIG_MTD_SPI_NOR=y
+ CONFIG_MTD_UBI=m
+-CONFIG_UBIFS_FS=m
+ CONFIG_BLK_DEV_LOOP=y
+ CONFIG_BLK_DEV_NBD=m
++CONFIG_BLK_DEV_RAM=y
+ CONFIG_VIRTIO_BLK=y
  CONFIG_BLK_DEV_NVME=m
+ CONFIG_QCOM_COINCELL=m
+ CONFIG_QCOM_FASTRPC=m
+-CONFIG_BATTERY_QCOM_BATTMGR=m
+-CONFIG_UCSI_PMIC_GLINK=m
  CONFIG_SRAM=y
  CONFIG_PCI_ENDPOINT_TEST=m
 -CONFIG_EEPROM_AT24=m
@@ -912,1546 +1139,803 @@ index 5b5de83c6183..d09339830c01 100644
  CONFIG_EEPROM_AT25=m
  CONFIG_UACCE=m
  # CONFIG_SCSI_PROC_FS is not set
-@@ -343,6 +343,7 @@ CONFIG_MLX5_CORE=m
+@@ -308,7 +326,6 @@ CONFIG_AHCI_XGENE=y
+ CONFIG_AHCI_QORIQ=y
+ CONFIG_SATA_SIL24=y
+ CONFIG_SATA_RCAR=y
+-CONFIG_PATA_PLATFORM=y
+ CONFIG_PATA_OF_PLATFORM=y
+ CONFIG_MD=y
+ CONFIG_BLK_DEV_MD=m
+@@ -357,7 +374,7 @@ CONFIG_MLX5_CORE=m
  CONFIG_MLX5_CORE_EN=y
  CONFIG_QCOM_EMAC=m
  CONFIG_RMNET=m
+-CONFIG_R8169=m
 +CONFIG_R8169=y
  CONFIG_SH_ETH=y
  CONFIG_RAVB=y
- CONFIG_SMC91X=y
-@@ -440,7 +441,12 @@ CONFIG_VIRTIO_CONSOLE=y
- CONFIG_IPMI_HANDLER=m
- CONFIG_IPMI_DEVICE_INTERFACE=m
- CONFIG_IPMI_SI=m
-+CONFIG_HW_RANDOM=y
+ CONFIG_RENESAS_ETHER_SWITCH=y
+@@ -365,7 +382,8 @@ CONFIG_SMC91X=y
+ CONFIG_SMSC911X=y
+ CONFIG_SNI_AVE=y
+ CONFIG_SNI_NETSEC=y
+-CONFIG_STMMAC_ETH=m
++CONFIG_STMMAC_ETH=y
++CONFIG_DWMAC_MEDIATEK=y
+ CONFIG_DWMAC_TEGRA=m
+ CONFIG_TI_K3_AM65_CPSW_NUSS=y
+ CONFIG_QCOM_IPA=m
+@@ -377,13 +395,14 @@ CONFIG_MARVELL_10G_PHY=y
+ CONFIG_MICREL_PHY=y
+ CONFIG_MICROSEMI_PHY=y
+ CONFIG_AT803X_PHY=y
+-CONFIG_REALTEK_PHY=y
+ CONFIG_ROCKCHIP_PHY=y
+ CONFIG_DP83867_PHY=y
+ CONFIG_DP83869_PHY=m
+ CONFIG_DP83TD510_PHY=y
+ CONFIG_VITESSE_PHY=y
+ CONFIG_CAN_FLEXCAN=m
++CONFIG_CAN_M_CAN=m
++CONFIG_CAN_M_CAN_PLATFORM=m
+ CONFIG_CAN_RCAR=m
+ CONFIG_CAN_RCAR_CANFD=m
+ CONFIG_CAN_MCP251XFD=m
+@@ -401,6 +420,7 @@ CONFIG_USB_NET_SMSC75XX=m
+ CONFIG_USB_NET_SMSC95XX=m
+ CONFIG_USB_NET_PLUSB=m
+ CONFIG_USB_NET_MCS7830=m
++CONFIG_USB_NET_RNDIS_HOST=m
+ CONFIG_ATH10K=m
+ CONFIG_ATH10K_PCI=m
+ CONFIG_ATH10K_SDIO=m
+@@ -414,6 +434,7 @@ CONFIG_MWIFIEX=m
+ CONFIG_MWIFIEX_SDIO=m
+ CONFIG_MWIFIEX_PCIE=m
+ CONFIG_MT7921E=m
++CONFIG_MT7921S=m
+ CONFIG_RSI_91X=m
+ CONFIG_WL18XX=m
+ CONFIG_WLCORE_SDIO=m
+@@ -426,12 +447,12 @@ CONFIG_KEYBOARD_GPIO=y
+ CONFIG_KEYBOARD_SNVS_PWRKEY=m
+ CONFIG_KEYBOARD_IMX_SC_KEY=m
+ CONFIG_KEYBOARD_CROS_EC=y
+-CONFIG_KEYBOARD_MTK_PMIC=m
+ CONFIG_KEYBOARD_MT6779=y
++CONFIG_KEYBOARD_MTK_PMIC=m
+ CONFIG_MOUSE_ELAN_I2C=m
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ATMEL_MXT=m
+-CONFIG_TOUCHSCREEN_GOODIX=m
++CONFIG_TOUCHSCREEN_GOODIX=y
+ CONFIG_TOUCHSCREEN_ELAN=m
+ CONFIG_TOUCHSCREEN_EDT_FT5X06=m
+ CONFIG_INPUT_MISC=y
+@@ -491,12 +512,11 @@ CONFIG_HW_RANDOM=y
+ CONFIG_HW_RANDOM_VIRTIO=y
  CONFIG_TCG_TPM=y
-+CONFIG_HW_RANDOM_TPM=y
-+CONFIG_TCG_TIS_CORE=y
+ CONFIG_TCG_TIS=m
+-CONFIG_TCG_TIS_SPI=m
 +CONFIG_TCG_TIS_SPI=y
-+CONFIG_TCG_TIS_SPI_CR50=y
+ CONFIG_TCG_TIS_SPI_CR50=y
+ CONFIG_TCG_TIS_I2C_CR50=m
  CONFIG_TCG_TIS_I2C_INFINEON=y
  CONFIG_I2C_CHARDEV=y
- CONFIG_I2C_MUX=y
-@@ -740,10 +746,11 @@ CONFIG_SND_HDA_TEGRA=m
+-CONFIG_I2C_MUX=y
+ CONFIG_I2C_MUX_PCA954x=y
+ CONFIG_I2C_BCM2835=m
+ CONFIG_I2C_CADENCE=m
+@@ -557,7 +577,7 @@ CONFIG_SPI_TEGRA210_QUAD=m
+ CONFIG_SPI_TEGRA114=m
+ CONFIG_SPI_SPIDEV=m
+ CONFIG_SPMI=y
+-CONFIG_SPMI_MTK_PMIF=m
++CONFIG_SPMI_MTK_PMIF=y
+ CONFIG_PINCTRL_MAX77620=y
+ CONFIG_PINCTRL_RK805=m
+ CONFIG_PINCTRL_SINGLE=y
+@@ -574,9 +594,9 @@ CONFIG_PINCTRL_IMX8DXL=y
+ CONFIG_PINCTRL_IMX8ULP=y
+ CONFIG_PINCTRL_IMX93=y
+ CONFIG_PINCTRL_MSM=y
+-CONFIG_PINCTRL_IPQ8074=y
+ CONFIG_PINCTRL_IPQ5018=y
+ CONFIG_PINCTRL_IPQ5332=y
++CONFIG_PINCTRL_IPQ8074=y
+ CONFIG_PINCTRL_IPQ6018=y
+ CONFIG_PINCTRL_IPQ9574=y
+ CONFIG_PINCTRL_MSM8916=y
+@@ -588,12 +608,10 @@ CONFIG_PINCTRL_MSM8998=y
+ CONFIG_PINCTRL_QCM2290=y
+ CONFIG_PINCTRL_QCS404=y
+ CONFIG_PINCTRL_QDF2XXX=y
+-CONFIG_PINCTRL_QCOM_SPMI_PMIC=y
+ CONFIG_PINCTRL_QDU1000=y
+ CONFIG_PINCTRL_SA8775P=y
+ CONFIG_PINCTRL_SC7180=y
+ CONFIG_PINCTRL_SC7280=y
+-CONFIG_PINCTRL_SC7280_LPASS_LPI=m
+ CONFIG_PINCTRL_SC8180X=y
+ CONFIG_PINCTRL_SC8280XP=y
+ CONFIG_PINCTRL_SDM660=y
+@@ -605,14 +623,16 @@ CONFIG_PINCTRL_SM6350=y
+ CONFIG_PINCTRL_SM6375=y
+ CONFIG_PINCTRL_SM8150=y
+ CONFIG_PINCTRL_SM8250=y
+-CONFIG_PINCTRL_SM8250_LPASS_LPI=m
+ CONFIG_PINCTRL_SM8350=y
+ CONFIG_PINCTRL_SM8450=y
++CONFIG_PINCTRL_SM8550=y
++CONFIG_PINCTRL_QCOM_SPMI_PMIC=y
++CONFIG_PINCTRL_LPASS_LPI=m
++CONFIG_PINCTRL_SC7280_LPASS_LPI=m
++CONFIG_PINCTRL_SM8250_LPASS_LPI=m
+ CONFIG_PINCTRL_SM8450_LPASS_LPI=m
+ CONFIG_PINCTRL_SC8280XP_LPASS_LPI=m
+-CONFIG_PINCTRL_SM8550=y
+ CONFIG_PINCTRL_SM8550_LPASS_LPI=m
+-CONFIG_PINCTRL_LPASS_LPI=m
+ CONFIG_GPIO_ALTERA=m
+ CONFIG_GPIO_DAVINCI=y
+ CONFIG_GPIO_DWAPB=y
+@@ -621,10 +641,11 @@ CONFIG_GPIO_MPC8XXX=y
+ CONFIG_GPIO_MXC=y
+ CONFIG_GPIO_PL061=y
+ CONFIG_GPIO_RCAR=y
++CONFIG_GPIO_SYSCON=y
+ CONFIG_GPIO_UNIPHIER=y
++CONFIG_GPIO_VF610=y
+ CONFIG_GPIO_VISCONTI=y
+ CONFIG_GPIO_WCD934X=m
+-CONFIG_GPIO_VF610=y
+ CONFIG_GPIO_XGENE=y
+ CONFIG_GPIO_XGENE_SB=y
+ CONFIG_GPIO_MAX732X=y
+@@ -633,7 +654,6 @@ CONFIG_GPIO_PCA953X_IRQ=y
+ CONFIG_GPIO_BD9571MWV=m
+ CONFIG_GPIO_MAX77620=y
+ CONFIG_GPIO_SL28CPLD=m
+-CONFIG_GPIO_SYSCON=y
+ CONFIG_POWER_RESET_MSM=y
+ CONFIG_POWER_RESET_QCOM_PON=m
+ CONFIG_POWER_RESET_XGENE=y
+@@ -641,6 +661,7 @@ CONFIG_POWER_RESET_SYSCON=y
+ CONFIG_POWER_RESET_SYSCON_POWEROFF=y
+ CONFIG_SYSCON_REBOOT_MODE=y
+ CONFIG_NVMEM_REBOOT_MODE=m
++CONFIG_BATTERY_QCOM_BATTMGR=m
+ CONFIG_BATTERY_SBS=m
+ CONFIG_BATTERY_BQ27XXX=y
+ CONFIG_BATTERY_MAX17042=m
+@@ -659,27 +680,33 @@ CONFIG_SENSORS_RASPBERRYPI_HWMON=m
+ CONFIG_SENSORS_SL28CPLD=m
+ CONFIG_SENSORS_INA2XX=m
+ CONFIG_SENSORS_INA3221=m
++CONFIG_THERMAL_WRITABLE_TRIPS=y
++CONFIG_THERMAL_DEFAULT_GOV_POWER_ALLOCATOR=y
+ CONFIG_THERMAL_GOV_POWER_ALLOCATOR=y
+ CONFIG_CPU_THERMAL=y
+ CONFIG_DEVFREQ_THERMAL=y
+ CONFIG_THERMAL_EMULATION=y
+ CONFIG_IMX_SC_THERMAL=m
+ CONFIG_IMX8MM_THERMAL=m
+-CONFIG_QORIQ_THERMAL=m
+ CONFIG_K3_THERMAL=m
++CONFIG_QORIQ_THERMAL=m
+ CONFIG_SUN8I_THERMAL=y
+ CONFIG_ROCKCHIP_THERMAL=m
+ CONFIG_RCAR_THERMAL=y
+ CONFIG_RCAR_GEN3_THERMAL=y
+ CONFIG_RZG2L_THERMAL=y
+ CONFIG_ARMADA_THERMAL=y
++CONFIG_MTK_THERMAL=y
++CONFIG_MTK_SOC_THERMAL=y
++CONFIG_MTK_LVTS_THERMAL=y
++CONFIG_MTK_PMIC_THERMAL=y
+ CONFIG_BCM2711_THERMAL=m
+ CONFIG_BCM2835_THERMAL=m
+ CONFIG_BRCMSTB_THERMAL=m
+ CONFIG_EXYNOS_THERMAL=y
+ CONFIG_TEGRA_SOCTHERM=m
+ CONFIG_TEGRA_BPMP_THERMAL=m
+-CONFIG_GENERIC_ADC_THERMAL=m
++CONFIG_GENERIC_ADC_THERMAL=y
+ CONFIG_QCOM_TSENS=y
+ CONFIG_QCOM_SPMI_ADC_TM5=m
+ CONFIG_QCOM_SPMI_TEMP_ALARM=m
+@@ -691,6 +718,7 @@ CONFIG_ARM_SP805_WATCHDOG=y
+ CONFIG_ARM_SBSA_WATCHDOG=y
+ CONFIG_S3C2410_WATCHDOG=y
+ CONFIG_DW_WATCHDOG=y
++CONFIG_K3_RTI_WATCHDOG=m
+ CONFIG_SUNXI_WATCHDOG=m
+ CONFIG_NPCM7XX_WATCHDOG=y
+ CONFIG_IMX2_WDT=y
+@@ -706,7 +734,6 @@ CONFIG_UNIPHIER_WATCHDOG=y
+ CONFIG_PM8916_WATCHDOG=m
+ CONFIG_BCM2835_WDT=y
+ CONFIG_BCM7038_WDT=m
+-CONFIG_K3_RTI_WATCHDOG=m
+ CONFIG_MFD_ALTERA_SYSMGR=y
+ CONFIG_MFD_BD9571MWV=y
+ CONFIG_MFD_AXP20X_I2C=y
+@@ -723,8 +750,8 @@ CONFIG_MFD_RK8XX_SPI=y
+ CONFIG_MFD_SEC_CORE=y
+ CONFIG_MFD_SL28CPLD=y
+ CONFIG_RZ_MTU3=y
+-CONFIG_MFD_TPS65219=y
+ CONFIG_MFD_TI_AM335X_TSCADC=m
++CONFIG_MFD_TPS65219=y
+ CONFIG_MFD_ROHM_BD718XX=y
+ CONFIG_MFD_WCD934X=m
+ CONFIG_REGULATOR_FIXED_VOLTAGE=y
+@@ -739,7 +766,7 @@ CONFIG_REGULATOR_HI655X=y
+ CONFIG_REGULATOR_MAX77620=y
+ CONFIG_REGULATOR_MAX8973=y
+ CONFIG_REGULATOR_MP8859=y
+-CONFIG_REGULATOR_MT6315=m
++CONFIG_REGULATOR_MT6315=y
+ CONFIG_REGULATOR_MT6357=y
+ CONFIG_REGULATOR_MT6358=y
+ CONFIG_REGULATOR_MT6359=y
+@@ -759,12 +786,13 @@ CONFIG_REGULATOR_TPS65132=m
+ CONFIG_REGULATOR_TPS65219=y
+ CONFIG_REGULATOR_VCTRL=m
+ CONFIG_RC_CORE=m
++CONFIG_LIRC=y
+ CONFIG_RC_DECODERS=y
+ CONFIG_RC_DEVICES=y
+ CONFIG_IR_GPIO_CIR=m
+ CONFIG_IR_MESON=m
+ CONFIG_IR_SUNXI=m
+-CONFIG_MEDIA_SUPPORT=m
++CONFIG_MEDIA_SUPPORT=y
+ CONFIG_MEDIA_CAMERA_SUPPORT=y
+ CONFIG_MEDIA_ANALOG_TV_SUPPORT=y
+ CONFIG_MEDIA_DIGITAL_TV_SUPPORT=y
+@@ -777,7 +805,7 @@ CONFIG_V4L_PLATFORM_DRIVERS=y
+ CONFIG_SDR_PLATFORM_DRIVERS=y
+ CONFIG_V4L_MEM2MEM_DRIVERS=y
+ CONFIG_VIDEO_MEDIATEK_JPEG=m
+-CONFIG_VIDEO_MEDIATEK_VCODEC=m
++CONFIG_VIDEO_MEDIATEK_MDP3=m
+ CONFIG_VIDEO_IMX7_CSI=m
+ CONFIG_VIDEO_IMX_MIPI_CSIS=m
+ CONFIG_VIDEO_IMX8_ISI=m
+@@ -798,11 +826,15 @@ CONFIG_VIDEO_SAMSUNG_S5P_JPEG=m
+ CONFIG_VIDEO_SAMSUNG_S5P_MFC=m
+ CONFIG_VIDEO_SUN6I_CSI=m
+ CONFIG_VIDEO_HANTRO=m
++CONFIG_VIDEO_AP1302=m
++CONFIG_VIDEO_IMX214=m
+ CONFIG_VIDEO_IMX219=m
+ CONFIG_VIDEO_IMX412=m
+ CONFIG_VIDEO_OV5640=m
+ CONFIG_VIDEO_OV5645=m
+-CONFIG_DRM=m
++CONFIG_VIDEO_RDACM21=m
++CONFIG_VIDEO_DECODER=m
++CONFIG_DRM=y
+ CONFIG_DRM_I2C_NXP_TDA998X=m
+ CONFIG_DRM_HDLCD=m
+ CONFIG_DRM_MALI_DISPLAY=m
+@@ -825,25 +857,21 @@ CONFIG_ROCKCHIP_INNO_HDMI=y
+ CONFIG_ROCKCHIP_LVDS=y
+ CONFIG_DRM_RCAR_DU=m
+ CONFIG_DRM_RCAR_DW_HDMI=m
+-CONFIG_DRM_RCAR_MIPI_DSI=m
+ CONFIG_DRM_RZG2L_MIPI_DSI=m
+ CONFIG_DRM_SUN4I=m
+-CONFIG_DRM_SUN6I_DSI=m
+-CONFIG_DRM_SUN8I_DW_HDMI=m
+-CONFIG_DRM_SUN8I_MIXER=m
+ CONFIG_DRM_MSM=m
+ CONFIG_DRM_TEGRA=m
+ CONFIG_DRM_PANEL_BOE_TV101WUM_NL6=m
+ CONFIG_DRM_PANEL_LVDS=m
+ CONFIG_DRM_PANEL_SIMPLE=m
+-CONFIG_DRM_PANEL_EDP=m
++CONFIG_DRM_PANEL_EDP=y
+ CONFIG_DRM_PANEL_MANTIX_MLAF057WE51=m
+ CONFIG_DRM_PANEL_RAYDIUM_RM67191=m
+ CONFIG_DRM_PANEL_SITRONIX_ST7703=m
+ CONFIG_DRM_PANEL_STARTEK_KD070FHFID015=m
++CONFIG_DRM_PANEL_STARTEK_KD070FHFID078=y
+ CONFIG_DRM_PANEL_TRULY_NT35597_WQXGA=m
+ CONFIG_DRM_PANEL_VISIONOX_VTDR6130=m
+-CONFIG_DRM_DISPLAY_CONNECTOR=m
+ CONFIG_DRM_LONTIUM_LT8912B=m
+ CONFIG_DRM_LONTIUM_LT9611=m
+ CONFIG_DRM_LONTIUM_LT9611UXC=m
+@@ -869,19 +897,21 @@ CONFIG_DRM_VC4=m
+ CONFIG_DRM_ETNAVIV=m
+ CONFIG_DRM_HISI_HIBMC=m
+ CONFIG_DRM_HISI_KIRIN=m
+-CONFIG_DRM_MEDIATEK=m
++CONFIG_DRM_MEDIATEK=y
++CONFIG_DRM_MEDIATEK_DP=y
+ CONFIG_DRM_MEDIATEK_HDMI=m
+ CONFIG_DRM_MXSFB=m
+-CONFIG_DRM_MESON=m
+ CONFIG_DRM_IMX_LCDIF=m
++CONFIG_DRM_MESON=m
+ CONFIG_DRM_PL111=m
+ CONFIG_DRM_LIMA=m
+ CONFIG_DRM_PANFROST=m
+ CONFIG_DRM_TIDSS=m
+ CONFIG_FB=y
+-CONFIG_FB_MODE_HELPERS=y
+ CONFIG_FB_EFI=y
+-CONFIG_BACKLIGHT_PWM=m
++CONFIG_FB_MODE_HELPERS=y
++CONFIG_BACKLIGHT_CLASS_DEVICE=y
++CONFIG_BACKLIGHT_PWM=y
+ CONFIG_BACKLIGHT_LP855X=m
+ CONFIG_LOGO=y
+ # CONFIG_LOGO_LINUX_MONO is not set
+@@ -891,9 +921,11 @@ CONFIG_SND=y
+ CONFIG_SND_ALOOP=m
+ CONFIG_SND_HDA_TEGRA=m
  CONFIG_SND_HDA_CODEC_HDMI=m
++CONFIG_SND_USB_AUDIO=m
  CONFIG_SND_SOC=y
  CONFIG_SND_BCM2835_SOC_I2S=m
--CONFIG_SND_SOC_FSL_SAI=m
-+CONFIG_SND_SOC_FSL_SAI=y
  CONFIG_SND_SOC_FSL_ASRC=m
++CONFIG_SND_SOC_FSL_SAI=y
  CONFIG_SND_SOC_FSL_MICFIL=m
  CONFIG_SND_SOC_FSL_EASRC=m
-+CONFIG_SND_SOC_IMX_PCM_DMA=y
  CONFIG_SND_IMX_SOC=m
- CONFIG_SND_SOC_IMX_SGTL5000=m
- CONFIG_SND_SOC_IMX_SPDIF=m
-@@ -782,6 +789,9 @@ CONFIG_SND_SOC_RT5659=m
+@@ -904,6 +936,8 @@ CONFIG_SND_SOC_IMX_AUDMIX=m
+ CONFIG_SND_SOC_MT8183=m
+ CONFIG_SND_SOC_MT8183_MT6358_TS3A227E_MAX98357A=m
+ CONFIG_SND_SOC_MT8183_DA7219_MAX98357A=m
++CONFIG_SND_SOC_MT8188=y
++CONFIG_SND_SOC_MT8188_MT6359=y
+ CONFIG_SND_SOC_MT8192=m
+ CONFIG_SND_SOC_MT8192_MT6359_RT1015_RT5682=m
+ CONFIG_SND_SOC_MT8365=m
+@@ -925,6 +959,10 @@ CONFIG_SND_SOC_RK3399_GRU_SOUND=m
+ CONFIG_SND_SOC_SAMSUNG=y
+ CONFIG_SND_SOC_RCAR=m
+ CONFIG_SND_SOC_RZ=m
++CONFIG_SND_SOC_SOF_TOPLEVEL=y
++CONFIG_SND_SOC_SOF_OF=y
++CONFIG_SND_SOC_SOF_MTK_TOPLEVEL=y
++CONFIG_SND_SOC_SOF_MT8186=m
+ CONFIG_SND_SUN8I_CODEC=m
+ CONFIG_SND_SUN8I_CODEC_ANALOG=m
+ CONFIG_SND_SUN50I_CODEC_ANALOG=m
+@@ -944,7 +982,7 @@ CONFIG_SND_SOC_TEGRA210_AMX=m
+ CONFIG_SND_SOC_TEGRA210_ADX=m
+ CONFIG_SND_SOC_TEGRA210_MIXER=m
+ CONFIG_SND_SOC_TEGRA_AUDIO_GRAPH_CARD=m
+-CONFIG_SND_SOC_DAVINCI_MCASP=m
++CONFIG_SND_SOC_J721E_EVM=m
+ CONFIG_SND_SOC_AK4613=m
+ CONFIG_SND_SOC_DA7213=m
+ CONFIG_SND_SOC_ES7134=m
+@@ -953,17 +991,17 @@ CONFIG_SND_SOC_ES8316=m
+ CONFIG_SND_SOC_GTM601=m
+ CONFIG_SND_SOC_MSM8916_WCD_ANALOG=m
+ CONFIG_SND_SOC_MSM8916_WCD_DIGITAL=m
+-CONFIG_SND_SOC_PCM3168A_I2C=m
+ CONFIG_SND_SOC_RK817=m
+ CONFIG_SND_SOC_RT5640=m
+-CONFIG_SND_SOC_J721E_EVM=m
+ CONFIG_SND_SOC_RT5659=m
  CONFIG_SND_SOC_SIMPLE_AMPLIFIER=m
  CONFIG_SND_SOC_SIMPLE_MUX=m
+ CONFIG_SND_SOC_TAS2552=m
  CONFIG_SND_SOC_TAS571X=m
-+CONFIG_SND_SOC_TLV320AIC31XX=m
-+CONFIG_SND_SOC_TLV320AIC3X=m
-+CONFIG_SND_SOC_TLV320AIC3X_I2C=m
++CONFIG_SND_SOC_TLV320AIC31XX=y
+ CONFIG_SND_SOC_TLV320AIC32X4_I2C=m
+-CONFIG_SND_SOC_TLV320AIC3X_I2C=m
++CONFIG_SND_SOC_TLV320AIC3X_I2C=y
++CONFIG_SND_SOC_TLV320AIC3X_SPI=y
+ CONFIG_SND_SOC_WCD9335=m
  CONFIG_SND_SOC_WCD934X=m
- CONFIG_SND_SOC_WM8904=m
- CONFIG_SND_SOC_WM8960=m
-@@ -896,6 +906,7 @@ CONFIG_RTC_DRV_DS1307=m
- CONFIG_RTC_DRV_HYM8563=m
+ CONFIG_SND_SOC_WM8524=m
+@@ -975,12 +1013,13 @@ CONFIG_SND_SOC_WSA881X=m
+ CONFIG_SND_SOC_NAU8822=m
+ CONFIG_SND_SOC_LPASS_WSA_MACRO=m
+ CONFIG_SND_SOC_LPASS_VA_MACRO=m
+-CONFIG_SND_SOC_LPASS_RX_MACRO=m
+-CONFIG_SND_SOC_LPASS_TX_MACRO=m
+ CONFIG_SND_SIMPLE_CARD=m
+ CONFIG_SND_AUDIO_GRAPH_CARD=m
+ CONFIG_SND_AUDIO_GRAPH_CARD2=m
++CONFIG_UHID=y
+ CONFIG_HID_MULTITOUCH=m
++CONFIG_HID_BPF=y
++CONFIG_USB_HIDDEV=y
+ CONFIG_I2C_HID_ACPI=m
+ CONFIG_I2C_HID_OF=m
+ CONFIG_USB=y
+@@ -1013,7 +1052,7 @@ CONFIG_USB_CHIPIDEA=y
+ CONFIG_USB_CHIPIDEA_UDC=y
+ CONFIG_USB_CHIPIDEA_HOST=y
+ CONFIG_USB_ISP1760=y
+-CONFIG_USB_SERIAL=m
++CONFIG_USB_SERIAL=y
+ CONFIG_USB_SERIAL_CP210X=m
+ CONFIG_USB_SERIAL_FTDI_SIO=m
+ CONFIG_USB_SERIAL_OPTION=m
+@@ -1026,7 +1065,7 @@ CONFIG_USB_RENESAS_USBHS_UDC=m
+ CONFIG_USB_RZV2M_USB3DRD=y
+ CONFIG_USB_RENESAS_USB3=m
+ CONFIG_USB_TEGRA_XUDC=m
+-CONFIG_USB_CONFIGFS=m
++CONFIG_USB_CONFIGFS=y
+ CONFIG_USB_CONFIGFS_SERIAL=y
+ CONFIG_USB_CONFIGFS_ACM=y
+ CONFIG_USB_CONFIGFS_OBEX=y
+@@ -1037,14 +1076,19 @@ CONFIG_USB_CONFIGFS_RNDIS=y
+ CONFIG_USB_CONFIGFS_EEM=y
+ CONFIG_USB_CONFIGFS_MASS_STORAGE=y
+ CONFIG_USB_CONFIGFS_F_FS=y
++CONFIG_USB_CONFIGFS_F_UVC=y
+ CONFIG_TYPEC=m
+ CONFIG_TYPEC_TCPM=m
+ CONFIG_TYPEC_TCPCI=m
++CONFIG_TYPEC_RT1711H=m
+ CONFIG_TYPEC_FUSB302=m
+-CONFIG_TYPEC_TPS6598X=m
+-CONFIG_TYPEC_HD3SS3220=m
+ CONFIG_TYPEC_UCSI=m
+ CONFIG_UCSI_CCG=m
++CONFIG_UCSI_PMIC_GLINK=m
++CONFIG_TYPEC_TPS6598X=m
++CONFIG_TYPEC_HD3SS3220=m
++CONFIG_TYPEC_MUX_IT5205=m
++CONFIG_TYPEC_DP_ALTMODE=m
+ CONFIG_MMC=y
+ CONFIG_MMC_BLOCK_MINORS=32
+ CONFIG_MMC_ARMMMCI=y
+@@ -1108,7 +1152,7 @@ CONFIG_RTC_DRV_HYM8563=m
  CONFIG_RTC_DRV_MAX77686=y
  CONFIG_RTC_DRV_RK808=m
+ CONFIG_RTC_DRV_ISL1208=m
+-CONFIG_RTC_DRV_PCF85063=m
 +CONFIG_RTC_DRV_PCF85063=y
  CONFIG_RTC_DRV_PCF85363=m
  CONFIG_RTC_DRV_M41T80=m
- CONFIG_RTC_DRV_RX8581=m
-diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
-index bc8271a36cee..cea4ab0f24b2 100644
---- a/drivers/gpu/drm/mediatek/mtk_dp.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dp.c
-@@ -59,7 +59,9 @@ enum mtk_dp_train_state {
- 	MTK_DP_TRAIN_STATE_CHECKEDID,
- 	MTK_DP_TRAIN_STATE_TRAINING_PRE,
- 	MTK_DP_TRAIN_STATE_TRAINING,
-+	MTK_DP_TRAIN_STATE_CHECKTIMING,
- 	MTK_DP_TRAIN_STATE_NORMAL,
-+	MTK_DP_TRAIN_STATE_POWERSAVE,
- 	MTK_DP_TRAIN_STATE_DPIDLE,
- };
- 
-@@ -122,7 +124,6 @@ enum mtk_dp_color_depth {
- };
- 
- struct mtk_dp_audio_cfg {
--	int sad_count;
- 	int sample_rate;
- 	int word_length_bits;
- 	int channels;
-@@ -131,7 +132,7 @@ struct mtk_dp_audio_cfg {
- struct mtk_dp_info {
- 	enum mtk_dp_color_depth depth;
- 	enum mtk_dp_color_format format;
--	struct mtk_dp_audio_cfg audio_cur_cfg;
-+	struct mtk_dp_audio_cfg audio_caps;
- 	struct mtk_dp_timings timings;
- };
- 
-@@ -161,7 +162,6 @@ struct mtk_dp {
- 	struct drm_bridge *next_bridge;
- 	struct drm_dp_aux aux;
- 
--	/* Protects edid as it is used in both bridge ops and IRQ handler */
- 	struct mutex edid_lock;
- 	struct edid *edid;
- 
-@@ -181,22 +181,15 @@ struct mtk_dp {
- 	bool audio_enable;
- 
- 	bool has_fec;
--	/* Protects the mtk_dp struct */
- 	struct mutex dp_lock;
- 
--	/* Protects the plugged_cb as it's used in both bridge ops and audio */
- 	struct mutex update_plugged_status_lock;
- 
- 	hdmi_codec_plugged_cb plugged_cb;
- 	struct device *codec_dev;
--	/* Protects the eld data as it's used in both bridge ops and audio */
--	struct mutex eld_lock;
- 	u8 connector_eld[MAX_ELD_BYTES];
--	struct drm_connector *conn;
- 	bool need_debounce;
- 	struct timer_list debounce_timer;
--
--	enum drm_connector_status hpd_state;
- };
- 
- struct mtk_dp_driver_data {
-@@ -231,6 +224,27 @@ struct mtk_dp_sdp_packet {
- 	struct dp_sdp sdp;
- };
- 
-+#define MTK_DP_IEC_CHANNEL_STATUS_LEN 5
-+union mtk_dp_audio_channel_status {
-+	struct {
-+		u8 rev : 1;
-+		u8 is_lpcm : 1;
-+		u8 copy_right : 1;
-+		u8 additional_format_info : 3;
-+		u8 channel_status_mode : 2;
-+		u8 category_code;
-+		u8 src_num : 4;
-+		u8 channel_num : 4;
-+		u8 sampling_freq : 4;
-+		u8 clk_accuracy : 2;
-+		u8 rev2 : 2;
-+		u8 word_len : 4;
-+		u8 original_sampling_freq : 4;
-+	} iec;
-+
-+	u8 buf[MTK_DP_IEC_CHANNEL_STATUS_LEN];
-+};
-+
- static struct regmap_config mtk_dp_regmap_config = {
- 	.reg_bits = 32,
- 	.val_bits = 32,
-@@ -241,7 +255,7 @@ static struct regmap_config mtk_dp_regmap_config = {
- 
- static bool mtk_dp_is_edp(struct mtk_dp *mtk_dp)
+ CONFIG_RTC_DRV_BQ32K=m
+@@ -1130,7 +1174,7 @@ CONFIG_RTC_DRV_TEGRA=y
+ CONFIG_RTC_DRV_SNVS=m
+ CONFIG_RTC_DRV_BBNSM=m
+ CONFIG_RTC_DRV_IMX_SC=m
+-CONFIG_RTC_DRV_MT6397=m
++CONFIG_RTC_DRV_MT6397=y
+ CONFIG_RTC_DRV_XGENE=y
+ CONFIG_RTC_DRV_TI_K3=m
+ CONFIG_DMADEVICES=y
+@@ -1146,6 +1190,7 @@ CONFIG_PL330_DMA=y
+ CONFIG_TEGRA186_GPC_DMA=y
+ CONFIG_TEGRA20_APB_DMA=y
+ CONFIG_TEGRA210_ADMA=m
++CONFIG_MTK_UART_APDMA=y
+ CONFIG_QCOM_BAM_DMA=y
+ CONFIG_QCOM_GPI_DMA=m
+ CONFIG_QCOM_HIDMA_MGMT=y
+@@ -1155,6 +1200,9 @@ CONFIG_RENESAS_USB_DMAC=m
+ CONFIG_RZ_DMAC=y
+ CONFIG_TI_K3_UDMA=y
+ CONFIG_TI_K3_UDMA_GLUE_LAYER=y
++CONFIG_DMABUF_HEAPS=y
++CONFIG_DMABUF_HEAPS_SYSTEM=y
++CONFIG_DMABUF_HEAPS_CMA=y
+ CONFIG_VFIO=y
+ CONFIG_VFIO_PCI=y
+ CONFIG_VIRTIO_PCI=y
+@@ -1172,7 +1220,6 @@ CONFIG_CROS_EC_RPMSG=m
+ CONFIG_CROS_EC_SPI=y
+ CONFIG_CROS_EC_CHARDEV=m
+ CONFIG_COMMON_CLK_RK808=y
+-CONFIG_COMMON_CLK_SCMI=y
+ CONFIG_COMMON_CLK_SCPI=y
+ CONFIG_COMMON_CLK_CS2000_CP=y
+ CONFIG_COMMON_CLK_FSL_SAI=y
+@@ -1190,18 +1237,6 @@ CONFIG_CLK_IMX8QXP=y
+ CONFIG_CLK_IMX8ULP=y
+ CONFIG_CLK_IMX93=y
+ CONFIG_TI_SCI_CLK=y
+-CONFIG_COMMON_CLK_MT8192_AUDSYS=y
+-CONFIG_COMMON_CLK_MT8192_CAMSYS=y
+-CONFIG_COMMON_CLK_MT8192_IMGSYS=y
+-CONFIG_COMMON_CLK_MT8192_IMP_IIC_WRAP=y
+-CONFIG_COMMON_CLK_MT8192_IPESYS=y
+-CONFIG_COMMON_CLK_MT8192_MDPSYS=y
+-CONFIG_COMMON_CLK_MT8192_MFGCFG=y
+-CONFIG_COMMON_CLK_MT8192_MMSYS=y
+-CONFIG_COMMON_CLK_MT8192_MSDC=y
+-CONFIG_COMMON_CLK_MT8192_SCP_ADSP=y
+-CONFIG_COMMON_CLK_MT8192_VDECSYS=y
+-CONFIG_COMMON_CLK_MT8192_VENCSYS=y
+ CONFIG_COMMON_CLK_QCOM=y
+ CONFIG_QCOM_A53PLL=y
+ CONFIG_QCOM_CLK_APCS_MSM8916=y
+@@ -1209,24 +1244,23 @@ CONFIG_QCOM_CLK_APCC_MSM8996=y
+ CONFIG_QCOM_CLK_SMD_RPM=y
+ CONFIG_QCOM_CLK_RPMH=y
+ CONFIG_IPQ_APSS_6018=y
+-CONFIG_IPQ_GCC_5332=y
+-CONFIG_IPQ_APSS_5018=y
+ CONFIG_IPQ_GCC_5018=y
++CONFIG_IPQ_GCC_5332=y
+ CONFIG_IPQ_GCC_6018=y
+ CONFIG_IPQ_GCC_8074=y
+ CONFIG_IPQ_GCC_9574=y
+ CONFIG_MSM_GCC_8916=y
++CONFIG_MSM_MMCC_8994=m
+ CONFIG_MSM_GCC_8994=y
+ CONFIG_MSM_GCC_8996=y
+-CONFIG_MSM_MMCC_8994=m
+ CONFIG_MSM_MMCC_8996=m
+-CONFIG_MSM_MMCC_8998=m
+ CONFIG_MSM_GCC_8998=y
++CONFIG_MSM_MMCC_8998=m
+ CONFIG_QCM_GCC_2290=y
+ CONFIG_QCM_DISPCC_2290=m
+ CONFIG_QCS_GCC_404=y
+-CONFIG_SA_GCC_8775P=y
+ CONFIG_SC_DISPCC_8280XP=m
++CONFIG_SA_GCC_8775P=y
+ CONFIG_SA_GPUCC_8775P=m
+ CONFIG_SC_GCC_7180=y
+ CONFIG_SC_GCC_7280=y
+@@ -1248,10 +1282,10 @@ CONFIG_SM_GCC_6115=y
+ CONFIG_SM_GCC_8350=y
+ CONFIG_SM_GCC_8450=y
+ CONFIG_SM_GCC_8550=y
+-CONFIG_SM_TCSRCC_8550=y
+ CONFIG_SM_GPUCC_6115=m
+ CONFIG_SM_GPUCC_8150=y
+ CONFIG_SM_GPUCC_8250=y
++CONFIG_SM_TCSRCC_8550=y
+ CONFIG_SM_VIDEOCC_8250=y
+ CONFIG_QCOM_HFPLL=y
+ CONFIG_CLK_GFM_LPASS_SM8250=m
+@@ -1262,10 +1296,10 @@ CONFIG_TEGRA186_TIMER=y
+ CONFIG_RENESAS_OSTM=y
+ CONFIG_ARM_MHU=y
+ CONFIG_IMX_MBOX=y
+-CONFIG_OMAP2PLUS_MBOX=m
+ CONFIG_PLATFORM_MHU=y
+ CONFIG_BCM2835_MBOX=y
+ CONFIG_QCOM_APCS_IPC=y
++CONFIG_MTK_ADSP_MBOX=y
+ CONFIG_QCOM_IPCC=y
+ CONFIG_ROCKCHIP_IOMMU=y
+ CONFIG_TEGRA_IOMMU_SMMU=y
+@@ -1275,14 +1309,14 @@ CONFIG_MTK_IOMMU=y
+ CONFIG_QCOM_IOMMU=y
+ CONFIG_REMOTEPROC=y
+ CONFIG_IMX_REMOTEPROC=y
+-CONFIG_TI_K3_R5_REMOTEPROC=m
+-CONFIG_TI_K3_DSP_REMOTEPROC=m
+ CONFIG_MTK_SCP=m
+ CONFIG_QCOM_Q6V5_ADSP=m
+ CONFIG_QCOM_Q6V5_MSS=m
+ CONFIG_QCOM_Q6V5_PAS=m
+ CONFIG_QCOM_SYSMON=m
+ CONFIG_QCOM_WCNSS_PIL=m
++CONFIG_TI_K3_DSP_REMOTEPROC=m
++CONFIG_TI_K3_R5_REMOTEPROC=m
+ CONFIG_RPMSG_CHAR=m
+ CONFIG_RPMSG_CTRL=m
+ CONFIG_RPMSG_QCOM_GLINK_RPM=y
+@@ -1296,7 +1330,7 @@ CONFIG_RASPBERRYPI_POWER=y
+ CONFIG_FSL_DPAA=y
+ CONFIG_FSL_MC_DPIO=y
+ CONFIG_FSL_RCPM=y
+-CONFIG_MTK_CMDQ=m
++CONFIG_MTK_CMDQ=y
+ CONFIG_MTK_DEVAPC=m
+ CONFIG_MTK_PMIC_WRAP=y
+ CONFIG_MTK_SVS=m
+@@ -1349,6 +1383,8 @@ CONFIG_ARCH_TEGRA_194_SOC=y
+ CONFIG_ARCH_TEGRA_234_SOC=y
+ CONFIG_TI_SCI_PM_DOMAINS=y
+ CONFIG_TI_PRUSS=m
++CONFIG_DEVFREQ_GOV_PERFORMANCE=y
++CONFIG_DEVFREQ_GOV_POWERSAVE=y
+ CONFIG_ARM_IMX_BUS_DEVFREQ=y
+ CONFIG_ARM_IMX8M_DDRC_DEVFREQ=m
+ CONFIG_ARM_MEDIATEK_CCI_DEVFREQ=m
+@@ -1360,7 +1396,8 @@ CONFIG_IIO=y
+ CONFIG_EXYNOS_ADC=y
+ CONFIG_IMX93_ADC=m
+ CONFIG_MAX9611=m
+-CONFIG_MEDIATEK_MT6577_AUXADC=m
++CONFIG_MEDIATEK_MT635X_AUXADC=y
++CONFIG_MEDIATEK_MT6577_AUXADC=y
+ CONFIG_QCOM_SPMI_VADC=m
+ CONFIG_QCOM_SPMI_ADC5=m
+ CONFIG_ROCKCHIP_SARADC=m
+@@ -1382,7 +1419,7 @@ CONFIG_PWM_BRCMSTB=m
+ CONFIG_PWM_CROS_EC=m
+ CONFIG_PWM_IMX27=m
+ CONFIG_PWM_MESON=m
+-CONFIG_PWM_MTK_DISP=m
++CONFIG_PWM_MTK_DISP=y
+ CONFIG_PWM_MEDIATEK=m
+ CONFIG_PWM_RCAR=m
+ CONFIG_PWM_RENESAS_TPU=m
+@@ -1403,6 +1440,7 @@ CONFIG_RESET_QCOM_AOSS=y
+ CONFIG_RESET_QCOM_PDC=m
+ CONFIG_RESET_RZG2L_USBPHY_CTRL=y
+ CONFIG_RESET_TI_SCI=y
++CONFIG_RESET_TI_SYSCON=y
+ CONFIG_PHY_XGENE=y
+ CONFIG_PHY_CAN_TRANSCEIVER=m
+ CONFIG_PHY_SUN4I_USB=y
+@@ -1416,11 +1454,11 @@ CONFIG_PHY_HISI_INNO_USB2=y
+ CONFIG_PHY_MVEBU_CP110_COMPHY=y
+ CONFIG_PHY_MTK_TPHY=y
+ CONFIG_PHY_QCOM_EDP=m
+-CONFIG_PHY_QCOM_EUSB2_REPEATER=m
+ CONFIG_PHY_QCOM_PCIE2=m
+ CONFIG_PHY_QCOM_QMP=m
+ CONFIG_PHY_QCOM_QUSB2=m
+ CONFIG_PHY_QCOM_SNPS_EUSB2=m
++CONFIG_PHY_QCOM_EUSB2_REPEATER=m
+ CONFIG_PHY_QCOM_USB_HS=m
+ CONFIG_PHY_QCOM_USB_SNPS_FEMTO_V2=m
+ CONFIG_PHY_QCOM_USB_HS_28NM=m
+@@ -1447,7 +1485,6 @@ CONFIG_PHY_J721E_WIZ=m
+ CONFIG_ARM_CCI_PMU=m
+ CONFIG_ARM_CCN=m
+ CONFIG_ARM_CMN=m
+-CONFIG_ARM_CORESIGHT_PMU_ARCH_SYSTEM_PMU=m
+ CONFIG_ARM_SMMU_V3_PMU=m
+ CONFIG_ARM_DSU_PMU=m
+ CONFIG_FSL_IMX8_DDR_PMU=m
+@@ -1456,6 +1493,7 @@ CONFIG_QCOM_L3_PMU=y
+ CONFIG_ARM_SPE_PMU=m
+ CONFIG_ARM_DMC620_PMU=m
+ CONFIG_HISI_PMU=y
++CONFIG_ARM_CORESIGHT_PMU_ARCH_SYSTEM_PMU=m
+ CONFIG_NVMEM_LAYOUT_SL28_VPD=m
+ CONFIG_NVMEM_IMX_OCOTP=y
+ CONFIG_NVMEM_IMX_OCOTP_ELE=m
+@@ -1463,6 +1501,7 @@ CONFIG_NVMEM_IMX_OCOTP_SCU=y
+ CONFIG_NVMEM_LAYERSCAPE_SFP=m
+ CONFIG_NVMEM_MESON_EFUSE=m
+ CONFIG_NVMEM_MTK_EFUSE=y
++CONFIG_MT635X_EFUSE=y
+ CONFIG_NVMEM_QCOM_QFPROM=y
+ CONFIG_NVMEM_RMEM=m
+ CONFIG_NVMEM_ROCKCHIP_EFUSE=y
+@@ -1482,10 +1521,8 @@ CONFIG_TEE=y
+ CONFIG_OPTEE=y
+ CONFIG_MUX_GPIO=m
+ CONFIG_MUX_MMIO=y
+-CONFIG_SLIMBUS=m
+ CONFIG_SLIM_QCOM_CTRL=m
+ CONFIG_SLIM_QCOM_NGD_CTRL=m
+-CONFIG_INTERCONNECT=y
+ CONFIG_INTERCONNECT_IMX=y
+ CONFIG_INTERCONNECT_IMX8MM=m
+ CONFIG_INTERCONNECT_IMX8MN=m
+@@ -1524,22 +1561,26 @@ CONFIG_QUOTA=y
+ CONFIG_AUTOFS_FS=y
+ CONFIG_FUSE_FS=m
+ CONFIG_CUSE=m
+-CONFIG_OVERLAY_FS=m
++CONFIG_OVERLAY_FS=y
+ CONFIG_VFAT_FS=y
++CONFIG_EXFAT_FS=m
+ CONFIG_TMPFS_POSIX_ACL=y
+ CONFIG_HUGETLBFS=y
+-CONFIG_CONFIGFS_FS=y
+ CONFIG_EFIVAR_FS=y
++CONFIG_UBIFS_FS=m
+ CONFIG_SQUASHFS=y
+ CONFIG_NFS_FS=y
+ CONFIG_NFS_V4=y
+ CONFIG_NFS_V4_1=y
+ CONFIG_NFS_V4_2=y
+ CONFIG_ROOT_NFS=y
++CONFIG_NFSD=y
+ CONFIG_9P_FS=y
+ CONFIG_NLS_CODEPAGE_437=y
+ CONFIG_NLS_ISO8859_1=y
+ CONFIG_SECURITY=y
++CONFIG_SECURITY_NETWORK=y
++CONFIG_SECURITY_PATH=y
+ CONFIG_CRYPTO_USER=y
+ CONFIG_CRYPTO_TEST=m
+ CONFIG_CRYPTO_ECHAINIV=y
+@@ -1573,12 +1614,16 @@ CONFIG_CMA_SIZE_MBYTES=32
+ CONFIG_PRINTK_TIME=y
+ CONFIG_DEBUG_KERNEL=y
+ CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+-CONFIG_DEBUG_INFO_REDUCED=y
++CONFIG_DEBUG_INFO_BTF=y
+ CONFIG_MAGIC_SYSRQ=y
+-CONFIG_DEBUG_FS=y
+ # CONFIG_SCHED_DEBUG is not set
+-# CONFIG_DEBUG_PREEMPT is not set
+-# CONFIG_FTRACE is not set
++CONFIG_FUNCTION_TRACER=y
++CONFIG_FUNCTION_GRAPH_RETVAL=y
++CONFIG_FUNCTION_PROFILER=y
++CONFIG_FTRACE_SYSCALLS=y
++CONFIG_BLK_DEV_IO_TRACE=y
++CONFIG_BPF_KPROBE_OVERRIDE=y
++CONFIG_USER_EVENTS=y
+ CONFIG_CORESIGHT=m
+ CONFIG_CORESIGHT_LINK_AND_SINK_TMC=m
+ CONFIG_CORESIGHT_CATU=m
+@@ -1587,4 +1632,5 @@ CONFIG_CORESIGHT_SINK_ETBV10=m
+ CONFIG_CORESIGHT_STM=m
+ CONFIG_CORESIGHT_CPU_DEBUG=m
+ CONFIG_CORESIGHT_CTI=m
++CONFIG_FUNCTION_ERROR_INJECTION=y
+ CONFIG_MEMTEST=y
+diff --git a/drivers/pmdomain/mediatek/mtk-pm-domains.c b/drivers/pmdomain/mediatek/mtk-pm-domains.c
+index 1285f4c8a574..d0c5d3ed0bed 100644
+--- a/drivers/pmdomain/mediatek/mtk-pm-domains.c
++++ b/drivers/pmdomain/mediatek/mtk-pm-domains.c
+@@ -176,9 +176,8 @@ static int scpsys_clamp_bus_protection_enable(struct scpsys_domain *pd, bool is_
  {
--	return mtk_dp->next_bridge;
-+	return mtk_dp->next_bridge != NULL;
- }
- 
- static struct mtk_dp *mtk_dp_from_bridge(struct drm_bridge *b)
-@@ -493,9 +507,9 @@ static void mtk_dp_setup_encoder(struct mtk_dp *mtk_dp)
- 			   FIFO_READ_START_POINT_DP_ENC1_P0_MASK);
- 	mtk_dp_write(mtk_dp, MTK_DP_ENC1_P0_3368,
- 		     1 << VIDEO_SRAM_FIFO_CNT_RESET_SEL_DP_ENC1_P0_SHIFT |
--		     1 << VIDEO_STABLE_CNT_THRD_DP_ENC1_P0_SHIFT |
--		     BIT(SDP_DP13_EN_DP_ENC1_P0_SHIFT) |
--		     1 << BS2BS_MODE_DP_ENC1_P0_SHIFT);
-+			     1 << VIDEO_STABLE_CNT_THRD_DP_ENC1_P0_SHIFT |
-+			     BIT(SDP_DP13_EN_DP_ENC1_P0_SHIFT) |
-+			     1 << BS2BS_MODE_DP_ENC1_P0_SHIFT);
- }
- 
- static void mtk_dp_pg_disable(struct mtk_dp *mtk_dp)
-@@ -539,11 +553,12 @@ static void mtk_dp_audio_setup_channels(struct mtk_dp *mtk_dp,
- 				      AUDIO_8CH_EN_DP_ENC0_P0_MASK;
- 		break;
- 	}
--	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3088,
--			   channel_enable_bits | AU_EN_DP_ENC0_P0_MASK,
--			   AUDIO_2CH_SEL_DP_ENC0_P0_MASK | AUDIO_2CH_EN_DP_ENC0_P0_MASK |
--			   AUDIO_8CH_SEL_DP_ENC0_P0_MASK |
--			   AUDIO_8CH_EN_DP_ENC0_P0_MASK | AU_EN_DP_ENC0_P0_MASK);
-+	mtk_dp_update_bits(
-+		mtk_dp, MTK_DP_ENC0_P0_3088,
-+		channel_enable_bits | AU_EN_DP_ENC0_P0_MASK,
-+		AUDIO_2CH_SEL_DP_ENC0_P0_MASK | AUDIO_2CH_EN_DP_ENC0_P0_MASK |
-+			AUDIO_8CH_SEL_DP_ENC0_P0_MASK |
-+			AUDIO_8CH_EN_DP_ENC0_P0_MASK | AU_EN_DP_ENC0_P0_MASK);
- 
- 	//audio channel count change reset
- 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_33F4, 0, BIT(9));
-@@ -555,56 +570,54 @@ static void mtk_dp_audio_setup_channels(struct mtk_dp *mtk_dp,
- static void mtk_dp_audio_channel_status_set(struct mtk_dp *mtk_dp,
- 					    struct mtk_dp_audio_cfg *cfg)
- {
--	struct snd_aes_iec958 iec = { 0 };
-+	union mtk_dp_audio_channel_status channel_status;
-+
-+	memset(&channel_status, 0, sizeof(channel_status));
- 
- 	switch (cfg->sample_rate) {
- 	case 32000:
--		iec.status[3] = IEC958_AES3_CON_FS_32000;
-+		channel_status.iec.sampling_freq = 3;
- 		break;
- 	case 44100:
--		iec.status[3] = IEC958_AES3_CON_FS_44100;
-+		channel_status.iec.sampling_freq = 0;
- 		break;
- 	case 48000:
--		iec.status[3] = IEC958_AES3_CON_FS_48000;
-+		channel_status.iec.sampling_freq = 2;
- 		break;
- 	case 88200:
--		iec.status[3] = IEC958_AES3_CON_FS_88200;
-+		channel_status.iec.sampling_freq = 8;
- 		break;
- 	case 96000:
--		iec.status[3] = IEC958_AES3_CON_FS_96000;
-+		channel_status.iec.sampling_freq = 0xA;
- 		break;
- 	case 192000:
--		iec.status[3] = IEC958_AES3_CON_FS_192000;
-+		channel_status.iec.sampling_freq = 0xE;
- 		break;
- 	default:
--		iec.status[3] = IEC958_AES3_CON_FS_NOTID;
-+		channel_status.iec.sampling_freq = 0x1;
- 		break;
- 	}
- 
- 	switch (cfg->word_length_bits) {
- 	case 16:
--		iec.status[4] = IEC958_AES4_CON_WORDLEN_20_16;
-+		channel_status.iec.word_len = 0x02;
- 		break;
- 	case 20:
--		iec.status[4] = IEC958_AES4_CON_WORDLEN_20_16 |
--			IEC958_AES4_CON_MAX_WORDLEN_24;
-+		channel_status.iec.word_len = 0x03;
- 		break;
- 	case 24:
--		iec.status[4] = IEC958_AES4_CON_WORDLEN_24_20 |
--			IEC958_AES4_CON_MAX_WORDLEN_24;
-+		channel_status.iec.word_len = 0x0B;
- 		break;
--	default:
--		iec.status[4] = IEC958_AES4_CON_WORDLEN_NOTID;
- 	}
- 
- 	// IEC 60958 consumer channel status bits
- 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_308C,
--			   0,
-+			   channel_status.buf[1] << 8 | channel_status.buf[0],
- 			   CH_STATUS_0_DP_ENC0_P0_MASK);
- 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3090,
--			   iec.status[3] << 8,
-+			   channel_status.buf[3] << 8 | channel_status.buf[2],
- 			   CH_STATUS_1_DP_ENC0_P0_MASK);
--	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3094, iec.status[4],
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3094, channel_status.buf[4],
- 			   CH_STATUS_2_DP_ENC0_P0_MASK);
- }
- 
-@@ -638,15 +651,8 @@ static void mtk_dp_audio_set_divider(struct mtk_dp *mtk_dp)
- 
- static bool mtk_dp_plug_state(struct mtk_dp *mtk_dp)
- {
--	bool state;
--
--	state = !!(mtk_dp_read(mtk_dp, MTK_DP_TRANS_P0_3414) &
--		HPD_DB_DP_TRANS_P0_MASK);
--
--	if (!mtk_dp_is_edp(mtk_dp))
--		return mtk_dp->hpd_state == connector_status_connected;
--
--	return state;
-+	return !!(mtk_dp_read(mtk_dp, MTK_DP_TRANS_P0_3414) &
-+		  HPD_DB_DP_TRANS_P0_MASK);
- }
- 
- static void mtk_dp_sdp_trigger_packet(struct mtk_dp *mtk_dp,
-@@ -768,11 +774,13 @@ static void mtk_dp_setup_sdp(struct mtk_dp *mtk_dp,
- 	case MTK_DP_SDP_PPS2:
- 	case MTK_DP_SDP_PPS3:
- 		mtk_dp_sdp_trigger_packet(mtk_dp, packet->type);
--		/* Enable periodic sending */
--		mtk_dp_update_bits(mtk_dp,
--				   mtk_dp_sdp_type_to_reg[packet->type] & 0xfffc,
--				   0x05 << ((mtk_dp_sdp_type_to_reg[packet->type] & 3) * 8),
--				   0xff << ((mtk_dp_sdp_type_to_reg[packet->type] & 3) * 8));
-+		// Enable periodic sending
-+		mtk_dp_update_bits(
-+			mtk_dp, mtk_dp_sdp_type_to_reg[packet->type] & 0xfffc,
-+			0x05 << ((mtk_dp_sdp_type_to_reg[packet->type] & 3) *
-+				 8),
-+			0xff << ((mtk_dp_sdp_type_to_reg[packet->type] & 3) *
-+				 8));
- 		break;
- 	default:
- 		break;
-@@ -788,14 +796,15 @@ static void mtk_dp_sdp_vsc_ext_disable(struct mtk_dp *mtk_dp)
- 
- static void mtk_dp_aux_irq_clear(struct mtk_dp *mtk_dp)
- {
--	mtk_dp_write(mtk_dp, MTK_DP_AUX_P0_3640,
--		     BIT(AUX_400US_TIMEOUT_IRQ_AUX_TX_P0_SHIFT) |
--		     BIT(AUX_RX_DATA_RECV_IRQ_AUX_TX_P0_SHIFT) |
--		     BIT(AUX_RX_ADDR_RECV_IRQ_AUX_TX_P0_SHIFT) |
--		     BIT(AUX_RX_CMD_RECV_IRQ_AUX_TX_P0_SHIFT) |
--		     BIT(AUX_RX_MCCS_RECV_COMPLETE_IRQ_AUX_TX_P0_SHIFT) |
--		     BIT(AUX_RX_EDID_RECV_COMPLETE_IRQ_AUX_TX_P0_SHIFT) |
--		     BIT(AUX_RX_AUX_RECV_COMPLETE_IRQ_AUX_TX_P0_SHIFT));
-+	mtk_dp_write(
-+		mtk_dp, MTK_DP_AUX_P0_3640,
-+		BIT(AUX_400US_TIMEOUT_IRQ_AUX_TX_P0_SHIFT) |
-+			BIT(AUX_RX_DATA_RECV_IRQ_AUX_TX_P0_SHIFT) |
-+			BIT(AUX_RX_ADDR_RECV_IRQ_AUX_TX_P0_SHIFT) |
-+			BIT(AUX_RX_CMD_RECV_IRQ_AUX_TX_P0_SHIFT) |
-+			BIT(AUX_RX_MCCS_RECV_COMPLETE_IRQ_AUX_TX_P0_SHIFT) |
-+			BIT(AUX_RX_EDID_RECV_COMPLETE_IRQ_AUX_TX_P0_SHIFT) |
-+			BIT(AUX_RX_AUX_RECV_COMPLETE_IRQ_AUX_TX_P0_SHIFT));
- }
- 
- static void mtk_dp_aux_set_cmd(struct mtk_dp *mtk_dp, u8 cmd, u32 addr)
-@@ -907,9 +916,13 @@ static int mtk_dp_aux_do_transfer(struct mtk_dp *mtk_dp, bool is_read, u8 cmd,
- 	int ret;
- 	u32 reply_cmd;
- 
-+	dev_dbg(mtk_dp->dev, "AUX transfer is_read(%d) cmd(%d) addr(0x%x) length(%zu)\n",
-+		is_read, cmd, addr, length);
- 	if (is_read && (length > DP_AUX_MAX_PAYLOAD_BYTES ||
--			(cmd == DP_AUX_NATIVE_READ && !length)))
-+			(cmd == DP_AUX_NATIVE_READ && !length))) {
-+		dev_err(mtk_dp->dev, "AUX err: read lenth > 16 or length = 0\n");
- 		return -EINVAL;
-+	}
- 
- 	if (!is_read)
- 		mtk_dp_update_bits(mtk_dp, MTK_DP_AUX_P0_3704,
-@@ -928,9 +941,10 @@ static int mtk_dp_aux_do_transfer(struct mtk_dp *mtk_dp, bool is_read, u8 cmd,
- 		if (length)
- 			mtk_dp_aux_fill_write_fifo(mtk_dp, buf, length);
- 
--		mtk_dp_update_bits(mtk_dp, MTK_DP_AUX_P0_3704,
--				   AUX_TX_FIFO_WRITE_DATA_NEW_MODE_TOGGLE_AUX_TX_P0_MASK,
--				   AUX_TX_FIFO_WRITE_DATA_NEW_MODE_TOGGLE_AUX_TX_P0_MASK);
-+		mtk_dp_update_bits(
-+			mtk_dp, MTK_DP_AUX_P0_3704,
-+			AUX_TX_FIFO_WRITE_DATA_NEW_MODE_TOGGLE_AUX_TX_P0_MASK,
-+			AUX_TX_FIFO_WRITE_DATA_NEW_MODE_TOGGLE_AUX_TX_P0_MASK);
- 	}
- 
- 	mtk_dp_aux_request_ready(mtk_dp);
-@@ -954,14 +968,15 @@ static int mtk_dp_aux_do_transfer(struct mtk_dp *mtk_dp, bool is_read, u8 cmd,
- 
- 		usleep_range(MTK_DP_AUX_WRITE_READ_WAIT_TIME_US,
- 			     MTK_DP_AUX_WRITE_READ_WAIT_TIME_US * 2);
-+		dev_err(mtk_dp->dev, "AUX err: wait completion timeout\n");
- 		return -ETIMEDOUT;
- 	}
- 
- 	if (!length) {
- 		mtk_dp_update_bits(mtk_dp, MTK_DP_AUX_P0_362C, 0,
- 				   AUX_NO_LENGTH_AUX_TX_P0_MASK |
--				   AUX_TX_AUXTX_OV_EN_AUX_TX_P0_MASK |
--				   AUX_RESERVED_RW_0_AUX_TX_P0_MASK);
-+					   AUX_TX_AUXTX_OV_EN_AUX_TX_P0_MASK |
-+					   AUX_RESERVED_RW_0_AUX_TX_P0_MASK);
- 	} else if (is_read) {
- 		int read_delay;
- 
-@@ -1008,10 +1023,10 @@ static void mtk_dp_reset_swing_pre_emphasis(struct mtk_dp *mtk_dp)
- {
- 	mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_SWING_EMP, 0,
- 			   DP_TX0_VOLT_SWING_MASK | DP_TX1_VOLT_SWING_MASK |
--			   DP_TX2_VOLT_SWING_MASK |
--			   DP_TX3_VOLT_SWING_MASK |
--			   DP_TX0_PRE_EMPH_MASK | DP_TX1_PRE_EMPH_MASK |
--			   DP_TX2_PRE_EMPH_MASK | DP_TX3_PRE_EMPH_MASK);
-+				   DP_TX2_VOLT_SWING_MASK |
-+				   DP_TX3_VOLT_SWING_MASK |
-+				   DP_TX0_PRE_EMPH_MASK | DP_TX1_PRE_EMPH_MASK |
-+				   DP_TX2_PRE_EMPH_MASK | DP_TX3_PRE_EMPH_MASK);
- }
- 
- static void mtk_dp_fec_enable(struct mtk_dp *mtk_dp, bool enable)
-@@ -1036,16 +1051,6 @@ static u32 mtk_dp_swirq_get_clear(struct mtk_dp *mtk_dp)
- 	return irq_status;
- }
- 
--static void mtk_dp_swirq_enable(struct mtk_dp *mtk_dp, bool enable)
--{
--	if (enable)
--		mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_35C4, 0,
--				SW_IRQ_MASK_DP_TRANS_P0_MASK);
--	else
--		mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_35C4, 0xFFFF,
--				SW_IRQ_MASK_DP_TRANS_P0_MASK);
--}
--
- static u32 mtk_dp_hwirq_get_clear(struct mtk_dp *mtk_dp)
- {
- 	u8 irq_status = (mtk_dp_read(mtk_dp, MTK_DP_TRANS_P0_3418) &
-@@ -1074,7 +1079,7 @@ static void mtk_dp_hwirq_enable(struct mtk_dp *mtk_dp, bool enable)
- 			   IRQ_MASK_DP_TRANS_P0_MASK);
- }
- 
--void mtk_dp_initialize_settings(struct mtk_dp *mtk_dp)
-+static void mtk_dp_initialize_settings(struct mtk_dp *mtk_dp)
- {
- 	mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_342C,
- 			   XTAL_FREQ_DP_TRANS_P0_DEFAULT,
-@@ -1209,7 +1214,7 @@ static int mtk_dp_get_calibration_data(struct mtk_dp *mtk_dp)
- 	struct device *dev = mtk_dp->dev;
- 	struct nvmem_cell *cell;
- 	u32 *buf;
--	size_t len = 0;
-+	size_t len;
- 
- 	cell = nvmem_cell_get(dev, "dp_calibration_data");
- 	if (IS_ERR(cell)) {
-@@ -1229,8 +1234,8 @@ static int mtk_dp_get_calibration_data(struct mtk_dp *mtk_dp)
- 	}
- 
- 	if (mtk_dp_is_edp(mtk_dp)) {
--		cal_data->glb_bias_trim =
--			check_cal_data_valid(1, 0x1e, (buf[3] >> 27) & 0x1f, 0xf);
-+		cal_data->glb_bias_trim = check_cal_data_valid(
-+			1, 0x1e, (buf[3] >> 27) & 0x1f, 0xf);
- 		cal_data->clktx_impse =
- 			check_cal_data_valid(1, 0xe, (buf[0] >> 9) & 0xf, 0x8);
- 		cal_data->ln0_tx_impsel_pmos =
-@@ -1250,8 +1255,8 @@ static int mtk_dp_get_calibration_data(struct mtk_dp *mtk_dp)
- 		cal_data->ln3_tx_impsel_nmos =
- 			check_cal_data_valid(1, 0xe, buf[2] & 0xf, 0x8);
- 	} else {
--		cal_data->glb_bias_trim =
--			check_cal_data_valid(1, 0x1e, (buf[0] >> 27) & 0x1f, 0xf);
-+		cal_data->glb_bias_trim = check_cal_data_valid(
-+			1, 0x1e, (buf[0] >> 27) & 0x1f, 0xf);
- 		cal_data->clktx_impse =
- 			check_cal_data_valid(1, 0xe, (buf[0] >> 13) & 0xf, 0x8);
- 		cal_data->ln0_tx_impsel_pmos =
-@@ -1277,7 +1282,7 @@ static int mtk_dp_get_calibration_data(struct mtk_dp *mtk_dp)
- 	return 0;
- }
- 
--void mtk_dp_set_cal_data(struct mtk_dp *mtk_dp)
-+static void mtk_dp_set_cal_data(struct mtk_dp *mtk_dp)
- {
- 	struct dp_cal_data *cal_data = &mtk_dp->cal_data;
- 
-@@ -1318,8 +1323,8 @@ static int mtk_dp_phy_configure(struct mtk_dp *mtk_dp,
- 	int ret;
- 	union phy_configure_opts
- 		phy_opts = { .dp = {
--				     .link_rate =
--					link_rate_to_mb_per_s(mtk_dp, link_rate),
-+				     .link_rate = link_rate_to_mb_per_s(
-+					     mtk_dp, link_rate),
- 				     .set_rate = 1,
- 				     .lanes = lane_count,
- 				     .set_lanes = 1,
-@@ -1357,12 +1362,12 @@ static void mtk_dp_train_set_pattern(struct mtk_dp *mtk_dp, int pattern)
- 	if (pattern == 1) // TPS1
- 		mtk_dp_set_idle_pattern(mtk_dp, false);
- 
--	mtk_dp_update_bits(mtk_dp,
--			   MTK_DP_TRANS_P0_3400,
--			   pattern ? BIT(pattern - 1) << PATTERN1_EN_DP_TRANS_P0_SHIFT : 0,
--			   PATTERN1_EN_DP_TRANS_P0_MASK | PATTERN2_EN_DP_TRANS_P0_MASK |
--			   PATTERN3_EN_DP_TRANS_P0_MASK |
--			   PATTERN4_EN_DP_TRANS_P0_MASK);
-+	mtk_dp_update_bits(
-+		mtk_dp, MTK_DP_TRANS_P0_3400,
-+		pattern ? BIT(pattern - 1) << PATTERN1_EN_DP_TRANS_P0_SHIFT : 0,
-+		PATTERN1_EN_DP_TRANS_P0_MASK | PATTERN2_EN_DP_TRANS_P0_MASK |
-+			PATTERN3_EN_DP_TRANS_P0_MASK |
-+			PATTERN4_EN_DP_TRANS_P0_MASK);
- }
- 
- static void mtk_dp_set_enhanced_frame_mode(struct mtk_dp *mtk_dp, bool enable)
-@@ -1387,7 +1392,7 @@ static void mtk_dp_video_mute(struct mtk_dp *mtk_dp, bool enable)
- 		val |= BIT(VIDEO_MUTE_SW_DP_ENC0_P0_SHIFT);
- 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3000, val,
- 			   VIDEO_MUTE_SEL_DP_ENC0_P0_MASK |
--			   VIDEO_MUTE_SW_DP_ENC0_P0_MASK);
-+				   VIDEO_MUTE_SW_DP_ENC0_P0_MASK);
- 
- 	if (mtk_dp_is_edp(mtk_dp))
- 		mtk_dp_sip_atf_call(MTK_DP_SIP_ATF_EDP_VIDEO_UNMUTE, enable);
-@@ -1398,12 +1403,12 @@ static void mtk_dp_video_mute(struct mtk_dp *mtk_dp, bool enable)
- static void mtk_dp_audio_mute(struct mtk_dp *mtk_dp, bool mute)
- {
- 	if (mute) {
--		mtk_dp_update_bits(mtk_dp,
--				   MTK_DP_ENC0_P0_3030,
--				   BIT(VBID_AUDIO_MUTE_SW_DP_ENC0_P0_SHIFT) |
--				   BIT(VBID_AUDIO_MUTE_SEL_DP_ENC0_P0_SHIFT),
--				   VBID_AUDIO_MUTE_FLAG_SW_DP_ENC0_P0_MASK |
--				   VBID_AUDIO_MUTE_FLAG_SEL_DP_ENC0_P0_MASK);
-+		mtk_dp_update_bits(
-+			mtk_dp, MTK_DP_ENC0_P0_3030,
-+			BIT(VBID_AUDIO_MUTE_SW_DP_ENC0_P0_SHIFT) |
-+				BIT(VBID_AUDIO_MUTE_SEL_DP_ENC0_P0_SHIFT),
-+			VBID_AUDIO_MUTE_FLAG_SW_DP_ENC0_P0_MASK |
-+				VBID_AUDIO_MUTE_FLAG_SEL_DP_ENC0_P0_MASK);
- 
- 		mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3088, 0,
- 				   AU_EN_DP_ENC0_P0_MASK);
-@@ -1411,10 +1416,10 @@ static void mtk_dp_audio_mute(struct mtk_dp *mtk_dp, bool mute)
- 				   AU_TS_CFG_DP_ENC0_P0_MASK);
- 
- 	} else {
--		mtk_dp_update_bits(mtk_dp,
--				   MTK_DP_ENC0_P0_3030, 0,
--				   VBID_AUDIO_MUTE_FLAG_SW_DP_ENC0_P0_MASK |
--				   VBID_AUDIO_MUTE_FLAG_SEL_DP_ENC0_P0_MASK);
-+		mtk_dp_update_bits(
-+			mtk_dp, MTK_DP_ENC0_P0_3030, 0,
-+			VBID_AUDIO_MUTE_FLAG_SW_DP_ENC0_P0_MASK |
-+				VBID_AUDIO_MUTE_FLAG_SEL_DP_ENC0_P0_MASK);
- 
- 		mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3088,
- 				   BIT(AU_EN_DP_ENC0_P0_SHIFT),
-@@ -1443,9 +1448,9 @@ static void mtk_dp_power_disable(struct mtk_dp *mtk_dp)
- 	usleep_range(10, 200);
- 	mtk_dp_write(mtk_dp, MTK_DP_0034,
- 		     DA_CKM_CKTX0_EN_FORCE_EN | DA_CKM_BIAS_LPF_EN_FORCE_VAL |
--		     DA_CKM_BIAS_EN_FORCE_VAL |
--		     DA_XTP_GLB_LDO_EN_FORCE_VAL |
--		     DA_XTP_GLB_AVD10_ON_FORCE_VAL);
-+			     DA_CKM_BIAS_EN_FORCE_VAL |
-+			     DA_XTP_GLB_LDO_EN_FORCE_VAL |
-+			     DA_XTP_GLB_AVD10_ON_FORCE_VAL);
- 	// Disable RX
- 	mtk_dp_write(mtk_dp, MTK_DP_1040, 0);
- 	mtk_dp_write(mtk_dp, MTK_DP_TOP_MEM_PD,
-@@ -1544,10 +1549,10 @@ static void mtk_dp_setup_tu(struct mtk_dp *mtk_dp)
- 	u32 sram_read_start = MTK_DP_TBC_BUF_READ_START_ADDR;
- 
- 	if (mtk_dp->train_info.lane_count > 0) {
--		sram_read_start = min_t(u32,
--					MTK_DP_TBC_BUF_READ_START_ADDR,
--					mtk_dp->info.timings.vm.hactive /
--					(mtk_dp->train_info.lane_count * 4 * 2 * 2));
-+		sram_read_start = min_t(
-+			u32, MTK_DP_TBC_BUF_READ_START_ADDR,
-+			mtk_dp->info.timings.vm.hactive /
-+				(mtk_dp->train_info.lane_count * 4 * 2 * 2));
- 		mtk_dp_set_sram_read_start(mtk_dp, sram_read_start);
- 	}
- 
-@@ -1629,6 +1634,7 @@ static void mtk_dp_hpd_sink_event(struct mtk_dp *mtk_dp)
- 
- 	locked = drm_dp_channel_eq_ok(link_status,
- 				      mtk_dp->train_info.lane_count);
-+	dev_dbg(mtk_dp->dev, "Read link status locked: 0x%x\n", locked);
- 	if (!locked && mtk_dp->train_state > MTK_DP_TRAIN_STATE_TRAINING_PRE)
- 		mtk_dp->train_state = MTK_DP_TRAIN_STATE_TRAINING_PRE;
- 
-@@ -1749,18 +1755,18 @@ static int mtk_dp_train_flow(struct mtk_dp *mtk_dp, int target_link_rate,
- 				mtk_dp_train_set_pattern(mtk_dp, 1);
- 				val = DP_LINK_SCRAMBLING_DISABLE |
- 				      DP_TRAINING_PATTERN_1;
--				drm_dp_dpcd_writeb(&mtk_dp->aux,
--						   DP_TRAINING_PATTERN_SET,
--						   DP_LINK_SCRAMBLING_DISABLE |
--						   DP_TRAINING_PATTERN_1);
-+				drm_dp_dpcd_writeb(
-+					&mtk_dp->aux, DP_TRAINING_PATTERN_SET,
-+					DP_LINK_SCRAMBLING_DISABLE |
-+						DP_TRAINING_PATTERN_1);
- 				drm_dp_dpcd_read(&mtk_dp->aux,
- 						 DP_ADJUST_REQUEST_LANE0_1,
- 						 lane_adjust,
- 						 sizeof(lane_adjust));
- 				iteration_count++;
- 
--				mtk_dp_train_update_swing_pre(mtk_dp,
--							      target_lane_count, lane_adjust);
-+				mtk_dp_train_update_swing_pre(
-+					mtk_dp, target_lane_count, lane_adjust);
- 			}
- 
- 			drm_dp_link_train_clock_recovery_delay(&mtk_dp->aux,
-@@ -1776,13 +1782,14 @@ static int mtk_dp_train_flow(struct mtk_dp *mtk_dp, int target_link_rate,
- 				dev_dbg(mtk_dp->dev, "Link train CR pass\n");
- 			} else if (prev_lane_adjust == link_status[4]) {
- 				iteration_count++;
-+				dev_dbg(mtk_dp->dev, "Link train CQ fail\n");
- 				if (prev_lane_adjust &
- 				    DP_ADJUST_VOLTAGE_SWING_LANE0_MASK)
- 					break;
- 			} else {
-+				dev_dbg(mtk_dp->dev, "Link train CQ fail\n");
- 				prev_lane_adjust = link_status[4];
- 			}
--			dev_dbg(mtk_dp->dev, "Link train CQ fail\n");
- 		} else if (pass_tps1 && !pass_tps2_3) {
- 			if (status_control == 1) {
- 				status_control = 2;
-@@ -1808,8 +1815,8 @@ static int mtk_dp_train_flow(struct mtk_dp *mtk_dp, int target_link_rate,
- 						 sizeof(lane_adjust));
- 
- 				iteration_count++;
--				mtk_dp_train_update_swing_pre(mtk_dp,
--							      target_lane_count, lane_adjust);
-+				mtk_dp_train_update_swing_pre(
-+					mtk_dp, target_lane_count, lane_adjust);
- 			}
- 
- 			drm_dp_link_train_channel_eq_delay(&mtk_dp->aux,
-@@ -1870,20 +1877,14 @@ static int mtk_dp_train_flow(struct mtk_dp *mtk_dp, int target_link_rate,
- static bool mtk_dp_parse_capabilities(struct mtk_dp *mtk_dp)
- {
- 	u8 buf[DP_RECEIVER_CAP_SIZE] = {};
--	u8 plug_wait;
- 	u8 val;
- 	struct mtk_dp_train_info *train_info = &mtk_dp->train_info;
- 
--	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER, DP_SET_POWER_D0);
--	usleep_range(2000, 5000);
--
--	for (plug_wait = 7; !mtk_dp_plug_state(mtk_dp) && plug_wait > 0; --plug_wait)
--		usleep_range(1000, 5000);
--	if (plug_wait == 0)
-+	if (!mtk_dp_plug_state(mtk_dp))
- 		return false;
- 
--//	if (!mtk_dp_plug_state(mtk_dp))
--//		return false;
-+	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER, DP_SET_POWER_D0);
-+	usleep_range(2000, 5000);
- 
- 	drm_dp_read_dpcd_caps(&mtk_dp->aux, buf);
- 
-@@ -1920,12 +1921,47 @@ static bool mtk_dp_parse_capabilities(struct mtk_dp *mtk_dp)
- static int mtk_dp_edid_parse_audio_capabilities(struct mtk_dp *mtk_dp,
- 						struct mtk_dp_audio_cfg *cfg)
- {
--	if (mtk_dp->info.audio_cur_cfg.sad_count <= 0) {
-+	struct cea_sad *sads = NULL;
-+	int sad_count;
-+	int i;
-+	int ret = 0;
-+
-+	mutex_lock(&mtk_dp->edid_lock);
-+	if (!mtk_dp->edid) {
-+		mutex_unlock(&mtk_dp->edid_lock);
-+		dev_err(mtk_dp->dev, "EDID not found!\n");
-+		return -EINVAL;
-+	}
-+
-+	sad_count = drm_edid_to_sad(mtk_dp->edid, &sads);
-+	mutex_unlock(&mtk_dp->edid_lock);
-+	if (sad_count <= 0) {
- 		drm_info(mtk_dp->drm_dev, "The SADs is NULL\n");
--		return false;
-+		return 0;
- 	}
- 
--	return true;
-+	for (i = 0; i < sad_count; i++) {
-+		int sample_rate;
-+		int word_length;
-+		// Only PCM supported at the moment
-+		if (sads[i].format != HDMI_AUDIO_CODING_TYPE_PCM)
-+			continue;
-+
-+		sample_rate = drm_cea_sad_get_sample_rate(&sads[i]);
-+		word_length =
-+			drm_cea_sad_get_uncompressed_word_length(&sads[i]);
-+		if (sample_rate <= 0 || word_length <= 0)
-+			continue;
-+
-+		cfg->channels = sads[i].channels;
-+		cfg->word_length_bits = word_length;
-+		cfg->sample_rate = sample_rate;
-+		ret = 1;
-+		break;
-+	}
-+	kfree(sads);
-+
-+	return ret;
- }
- 
- static void mtk_dp_train_change_mode(struct mtk_dp *mtk_dp)
-@@ -2018,6 +2054,80 @@ static int mtk_dp_train_start(struct mtk_dp *mtk_dp)
- 	return -ETIMEDOUT;
- }
- 
-+static int mtk_dp_train_handler(struct mtk_dp *mtk_dp)
-+{
-+	int ret = 0;
-+
-+	if (mtk_dp->train_state == MTK_DP_TRAIN_STATE_NORMAL)
-+		return ret;
-+
-+	switch (mtk_dp->train_state) {
-+	case MTK_DP_TRAIN_STATE_STARTUP:
-+		mtk_dp->train_state = MTK_DP_TRAIN_STATE_CHECKCAP;
-+		break;
-+
-+	case MTK_DP_TRAIN_STATE_CHECKCAP:
-+		if (mtk_dp_parse_capabilities(mtk_dp)) {
-+			mtk_dp->train_info.check_cap_count = 0;
-+			mtk_dp->train_state = MTK_DP_TRAIN_STATE_CHECKEDID;
-+		} else {
-+			mtk_dp->train_info.check_cap_count++;
-+
-+			if (mtk_dp->train_info.check_cap_count >
-+			    MTK_DP_CHECK_SINK_CAP_TIMEOUT_COUNT) {
-+				mtk_dp->train_info.check_cap_count = 0;
-+				mtk_dp->train_state = MTK_DP_TRAIN_STATE_DPIDLE;
-+				ret = -ETIMEDOUT;
-+			}
-+		}
-+		break;
-+
-+	case MTK_DP_TRAIN_STATE_CHECKEDID: {
-+		int caps_found = mtk_dp_edid_parse_audio_capabilities(
-+			mtk_dp, &mtk_dp->info.audio_caps);
-+		mtk_dp->audio_enable = caps_found > 0;
-+		if (!mtk_dp->audio_enable)
-+			memset(&mtk_dp->info.audio_caps, 0,
-+			       sizeof(mtk_dp->info.audio_caps));
-+	}
-+
-+		mtk_dp->train_state = MTK_DP_TRAIN_STATE_TRAINING_PRE;
-+		break;
-+
-+	case MTK_DP_TRAIN_STATE_TRAINING_PRE:
-+		mtk_dp->train_state = MTK_DP_TRAIN_STATE_TRAINING;
-+		break;
-+
-+	case MTK_DP_TRAIN_STATE_TRAINING:
-+		ret = mtk_dp_train_start(mtk_dp);
-+		if (!ret) {
-+			mtk_dp_video_mute(mtk_dp, true);
-+			mtk_dp_audio_mute(mtk_dp, true);
-+			mtk_dp->train_state = MTK_DP_TRAIN_STATE_CHECKTIMING;
-+			mtk_dp_fec_enable(mtk_dp, mtk_dp->has_fec);
-+		} else if (ret != -EAGAIN) {
-+			mtk_dp->train_state = MTK_DP_TRAIN_STATE_DPIDLE;
-+		}
-+
-+		ret = 0;
-+		break;
-+
-+	case MTK_DP_TRAIN_STATE_CHECKTIMING:
-+		mtk_dp->train_state = MTK_DP_TRAIN_STATE_NORMAL;
-+		break;
-+	case MTK_DP_TRAIN_STATE_NORMAL:
-+		break;
-+	case MTK_DP_TRAIN_STATE_POWERSAVE:
-+		break;
-+	case MTK_DP_TRAIN_STATE_DPIDLE:
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
- static void mtk_dp_video_enable(struct mtk_dp *mtk_dp, bool enable)
- {
- 	if (enable) {
-@@ -2081,8 +2191,10 @@ static void mtk_dp_video_config(struct mtk_dp *mtk_dp)
- 	mtk_dp_set_color_format(mtk_dp, mtk_dp->info.format);
- }
- 
--static void mtk_dp_state_handler(struct mtk_dp *mtk_dp)
-+static int mtk_dp_state_handler(struct mtk_dp *mtk_dp)
- {
-+	int ret = 0;
-+
- 	switch (mtk_dp->state) {
- 	case MTK_DP_STATE_INITIAL:
- 		mtk_dp_video_mute(mtk_dp, true);
-@@ -2094,10 +2206,16 @@ static void mtk_dp_state_handler(struct mtk_dp *mtk_dp)
- 		if (mtk_dp->train_state == MTK_DP_TRAIN_STATE_NORMAL)
- 			mtk_dp->state = MTK_DP_STATE_PREPARE;
- 		break;
-+
- 	case MTK_DP_STATE_PREPARE:
- 		mtk_dp_video_config(mtk_dp);
- 		mtk_dp_video_enable(mtk_dp, true);
- 
-+		if (mtk_dp->audio_enable) {
-+			mtk_dp_audio_setup(mtk_dp, &mtk_dp->info.audio_caps);
-+			mtk_dp_audio_mute(mtk_dp, false);
-+		}
-+
- 		mtk_dp->state = MTK_DP_STATE_NORMAL;
- 		break;
- 
-@@ -2113,77 +2231,7 @@ static void mtk_dp_state_handler(struct mtk_dp *mtk_dp)
- 	default:
- 		break;
- 	}
--}
- 
--static int mtk_dp_train_handler(struct mtk_dp *mtk_dp)
--{
--	bool training_done = false;
--	short max_retry = 50;
--	int ret = 0;
--
--	do {
--		switch (mtk_dp->train_state) {
--		case MTK_DP_TRAIN_STATE_STARTUP:
--			mtk_dp_state_handler(mtk_dp);
--			mtk_dp->train_state = MTK_DP_TRAIN_STATE_CHECKCAP;
--			break;
--
--		case MTK_DP_TRAIN_STATE_CHECKCAP:
--			if (mtk_dp_parse_capabilities(mtk_dp)) {
--				mtk_dp->train_info.check_cap_count = 0;
--				mtk_dp->train_state = MTK_DP_TRAIN_STATE_CHECKEDID;
--			} else {
--				mtk_dp->train_info.check_cap_count++;
--
--				if (mtk_dp->train_info.check_cap_count >
--				    MTK_DP_CHECK_SINK_CAP_TIMEOUT_COUNT) {
--					mtk_dp->train_info.check_cap_count = 0;
--					mtk_dp->train_state = MTK_DP_TRAIN_STATE_DPIDLE;
--					ret = -ETIMEDOUT;
--				}
--			}
--			break;
--
--		case MTK_DP_TRAIN_STATE_CHECKEDID:
--			mtk_dp->train_state = MTK_DP_TRAIN_STATE_TRAINING_PRE;
--			break;
--
--		case MTK_DP_TRAIN_STATE_TRAINING_PRE:
--			mtk_dp_state_handler(mtk_dp);
--			mtk_dp->train_state = MTK_DP_TRAIN_STATE_TRAINING;
--			break;
--
--		case MTK_DP_TRAIN_STATE_TRAINING:
--			ret = mtk_dp_train_start(mtk_dp);
--			if (ret == 0) {
--				mtk_dp_video_mute(mtk_dp, true);
--				mtk_dp_audio_mute(mtk_dp, true);
--				mtk_dp->train_state = MTK_DP_TRAIN_STATE_NORMAL;
--				mtk_dp_fec_enable(mtk_dp, mtk_dp->has_fec);
--			} else if (ret != -EAGAIN) {
--				mtk_dp->train_state = MTK_DP_TRAIN_STATE_DPIDLE;
--			}
--			break;
--		case MTK_DP_TRAIN_STATE_NORMAL:
--			mtk_dp_state_handler(mtk_dp);
--			training_done = true;
--			break;
--		case MTK_DP_TRAIN_STATE_DPIDLE:
--			break;
--		default:
--			break;
--		}
--
--		if (ret) {
--			if (ret == -EAGAIN)
--				continue;
--			/*
--			 * If we get any other error number, it doesn't
--			 * make any sense to keep iterating.
--			 */
--			break;
--		}
--	} while (!training_done || --max_retry);
- 	return ret;
- }
- 
-@@ -2203,10 +2251,26 @@ static void mtk_dp_init_port(struct mtk_dp *mtk_dp)
- 	mtk_dp_digital_sw_reset(mtk_dp);
- }
- 
--static void mtk_dp_train(struct mtk_dp *mtk_dp)
-+static irqreturn_t mtk_dp_hpd_event_thread(int hpd, void *dev)
- {
-+	struct mtk_dp *mtk_dp = dev;
-+	int event;
- 	u8 buf[DP_RECEIVER_CAP_SIZE] = {};
- 
-+	event = mtk_dp_plug_state(mtk_dp) ? connector_status_connected :
-+						  connector_status_disconnected;
-+
-+	if (event < 0)
-+		return IRQ_HANDLED;
-+
-+	if (mtk_dp->need_debounce && mtk_dp->train_info.cable_plugged_in)
-+		msleep(100);
-+
-+	if (mtk_dp->drm_dev) {
-+		dev_info(mtk_dp->dev, "drm_helper_hpd_irq_event\n");
-+		drm_helper_hpd_irq_event(mtk_dp->bridge.dev);
-+	}
-+
- 	if (mtk_dp->train_info.cable_state_change) {
- 		mtk_dp->train_info.cable_state_change = false;
- 
-@@ -2222,8 +2286,6 @@ static void mtk_dp_train(struct mtk_dp *mtk_dp)
- 			if (mtk_dp->has_fec)
- 				mtk_dp_fec_enable(mtk_dp, false);
- 			mtk_dp_sdp_stop_sending(mtk_dp);
--			memset(&mtk_dp->info.audio_cur_cfg, 0,
--					sizeof(mtk_dp->info.audio_cur_cfg));
- 
- 			mtk_dp_edid_free(mtk_dp);
- 			mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
-@@ -2242,26 +2304,6 @@ static void mtk_dp_train(struct mtk_dp *mtk_dp)
- 				      drm_dp_max_lane_count(buf));
- 		}
- 	}
--}
--
--static irqreturn_t mtk_dp_hpd_event_thread(int hpd, void *dev)
--{
--	struct mtk_dp *mtk_dp = dev;
--	int event;
--
--	event = mtk_dp_plug_state(mtk_dp) ? connector_status_connected :
--						  connector_status_disconnected;
--
--	if (event < 0)
--		return IRQ_HANDLED;
--
--	if (mtk_dp->need_debounce && mtk_dp->train_info.cable_plugged_in)
--		msleep(100);
--
--	if (mtk_dp->drm_dev)
--		drm_helper_hpd_irq_event(mtk_dp->bridge.dev);
--
--	mtk_dp_train(mtk_dp);
- 
- 	if (mtk_dp->train_info.irq_status & MTK_DP_HPD_INTERRUPT) {
- 		dev_info(mtk_dp->dev, "MTK_DP_HPD_INTERRUPT\n");
-@@ -2281,6 +2323,8 @@ static irqreturn_t mtk_dp_hpd_isr_handler(struct mtk_dp *mtk_dp)
- 
- 	train_info->irq_status |= hwirq_status | swirq_status;
- 
-+	dev_dbg(mtk_dp->dev, "hpd isr HWIRQ status(0x%x) SWIRQ status(0x%x)\n",
-+		hwirq_status, swirq_status);
- 	if (!train_info->irq_status)
- 		return IRQ_HANDLED;
- 
-@@ -2304,11 +2348,9 @@ static irqreturn_t mtk_dp_hpd_isr_handler(struct mtk_dp *mtk_dp)
- 	}
- 	train_info->cable_state_change = true;
- 
--	if (train_info->cable_state_change) {
--		if (!train_info->cable_plugged_in) {
--			mod_timer(&mtk_dp->debounce_timer, jiffies + msecs_to_jiffies(100) - 1);
--			mtk_dp->need_debounce = false;
--		}
-+	if (!train_info->cable_plugged_in) {
-+		mod_timer(&mtk_dp->debounce_timer, jiffies + msecs_to_jiffies(100) - 1);
-+		mtk_dp->need_debounce = false;
- 	}
- 
- 	return IRQ_WAKE_THREAD;
-@@ -2330,8 +2372,8 @@ static irqreturn_t mtk_dp_hpd_event(int hpd, void *dev)
- 	return IRQ_HANDLED;
- }
- 
--static int mtk_dp_dt_parse(struct mtk_dp *mtk_dp,
--			   struct platform_device *pdev)
-+static int mtk_dp_dt_parse_pdata(struct mtk_dp *mtk_dp,
-+				 struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
- 	int ret = 0;
-@@ -2348,7 +2390,7 @@ static int mtk_dp_dt_parse(struct mtk_dp *mtk_dp,
- 	mtk_dp->dp_tx_clk = devm_clk_get(dev, "faxi");
- 	if (IS_ERR(mtk_dp->dp_tx_clk)) {
- 		ret = PTR_ERR(mtk_dp->dp_tx_clk);
--		dev_info(dev, "Failed to get dptx clock: %d\n", ret);
-+		dev_err(dev, "Failed to get dptx clock: %d\n", ret);
- 		mtk_dp->dp_tx_clk = NULL;
- 	}
- 
-@@ -2378,8 +2420,9 @@ static enum drm_connector_status mtk_dp_bdg_detect(struct drm_bridge *bridge)
- 
- 	if (mtk_dp_plug_state(mtk_dp)) {
- 		drm_dp_dpcd_readb(&mtk_dp->aux, DP_SINK_COUNT, &sink_count);
--		if (DP_GET_SINK_COUNT(sink_count))
-+		if (DP_GET_SINK_COUNT(sink_count)) {
- 			ret = connector_status_connected;
-+		}
- 	}
- 
- 	mtk_dp_update_plugged_status(mtk_dp);
-@@ -2392,8 +2435,6 @@ static struct edid *mtk_dp_get_edid(struct drm_bridge *bridge,
- 	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
- 	bool enabled = mtk_dp->enabled;
- 	struct edid *new_edid = NULL;
--	struct mtk_dp_audio_cfg *audio_caps = &mtk_dp->info.audio_cur_cfg;
--	struct cea_sad *sads = NULL;
- 
- 	if (!enabled)
- 		drm_bridge_chain_pre_enable(bridge);
-@@ -2404,11 +2445,6 @@ static struct edid *mtk_dp_get_edid(struct drm_bridge *bridge,
- 	if (mtk_dp_plug_state(mtk_dp))
- 		new_edid = drm_get_edid(connector, &mtk_dp->aux.ddc);
- 
--	if (new_edid) {
--		audio_caps->sad_count = drm_edid_to_sad(new_edid, &sads);
--		kfree(sads);
+ 	int smi_count = 0;
+ 
+-	if (pd->num_smi == 0) {
++	if (is_smi && pd->num_smi == 0)
+ 		return 0;
 -	}
--
- 	if (!enabled)
- 		drm_bridge_chain_post_disable(bridge);
  
-@@ -2442,6 +2478,7 @@ static ssize_t mtk_dp_aux_transfer(struct drm_dp_aux *mtk_aux,
- 	if (!mtk_dp->train_info.cable_plugged_in ||
- 	    mtk_dp->train_info.irq_status & MTK_DP_HPD_DISCONNECT) {
- 		mtk_dp->train_state = MTK_DP_TRAIN_STATE_CHECKCAP;
-+		dev_err(mtk_dp->dev, "AUX err: DP noconnected\n");
- 		err = -EAGAIN;
- 		goto err;
- 	}
-@@ -2469,30 +2506,30 @@ static ssize_t mtk_dp_aux_transfer(struct drm_dp_aux *mtk_aux,
- 	}
+ 	for (int i = 0; i < SPM_MAX_BUS_PROT_DATA; i++) {
+ 		const struct scpsys_bus_prot_data *bpd = &pd->data->bp_cfg[i];
+@@ -213,9 +212,8 @@ static int scpsys_clamp_bus_protection_disable(struct scpsys_domain *pd, bool is
+ {
+ 	int smi_count = pd->num_smi - 1;
  
- 	if (msg->size == 0) {
--		retry = 7;
-+		retry = 32;
- 		while (retry--) {
- 			ret = mtk_dp_aux_do_transfer(mtk_dp, is_read, request,
- 						     msg->address + accessed_bytes,
- 						     msg->buffer + accessed_bytes, 0);
- 			if (ret == 0)
- 				break;
--			msleep(50);
-+			usleep_range(500, 600);
+-	if (pd->num_smi == 0) {
++	if (is_smi && pd->num_smi == 0)
+ 		return 0;
+-	}
+ 
+ 	for (int i = SPM_MAX_BUS_PROT_DATA - 1; i >= 0; i--) {
+ 		const struct scpsys_bus_prot_data *bpd = &pd->data->bp_cfg[i];
+@@ -509,7 +507,6 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
  		}
  	} else {
- 		while (accessed_bytes < msg->size) {
- 			size_t to_access =
- 				min_t(size_t, DP_AUX_MAX_PAYLOAD_BYTES,
- 				      msg->size - accessed_bytes);
--			retry = 7;
-+			retry = 32;
- 			while (retry--) {
--				ret = mtk_dp_aux_do_transfer(mtk_dp,
--							     is_read, request,
--							     msg->address + accessed_bytes,
--							     msg->buffer + accessed_bytes,
--							     to_access);
-+				ret = mtk_dp_aux_do_transfer(
-+					mtk_dp, is_read, request,
-+					msg->address + accessed_bytes,
-+					msg->buffer + accessed_bytes,
-+					to_access);
- 				if (ret == 0)
- 					break;
--				usleep_range(50, 100);
-+				usleep_range(500, 600);
- 			}
- 			if (!retry && ret) {
- 				drm_info(mtk_dp->drm_dev,
-@@ -2504,7 +2541,10 @@ static ssize_t mtk_dp_aux_transfer(struct drm_dp_aux *mtk_aux,
- 		}
- 	}
- err:
--	if (ret) {
-+	if (!ret) {
-+		msg->reply = DP_AUX_NATIVE_REPLY_ACK | DP_AUX_I2C_REPLY_ACK;
-+		ret = msg->size;
-+	} else {
- 		msg->reply = DP_AUX_NATIVE_REPLY_NACK | DP_AUX_I2C_REPLY_NACK;
- 		return err;
- 	}
-@@ -2513,26 +2553,6 @@ static ssize_t mtk_dp_aux_transfer(struct drm_dp_aux *mtk_aux,
- 	return msg->size;
- }
- 
--static void mtk_dp_swirq_hpd(struct mtk_dp *mtk_dp, u8 conn)
--{
--	u32 data;
--
--	data = mtk_dp_read(mtk_dp, MTK_DP_TRANS_P0_3414);
--
--	mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_3414,
--			HPD_OVR_EN_DP_TRANS_P0_MASK,
--			HPD_OVR_EN_DP_TRANS_P0_MASK);
--
--	if (conn)
--		mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_3414,
--			HPD_SET_DP_TRANS_P0_MASK,
--			HPD_SET_DP_TRANS_P0_MASK);
--	else
--		mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_3414,
--			0,
--			HPD_SET_DP_TRANS_P0_MASK);
--}
--
- static void mtk_dp_aux_init(struct mtk_dp *mtk_dp)
- {
- 	drm_dp_aux_init(&mtk_dp->aux);
-@@ -2540,20 +2560,6 @@ static void mtk_dp_aux_init(struct mtk_dp *mtk_dp)
- 	mtk_dp->aux.transfer = mtk_dp_aux_transfer;
- }
- 
--static void mtk_dp_swirq_hpd_interrupt_set(struct mtk_dp *mtk_dp, u8 status)
--{
--	dev_info(mtk_dp->dev, "[DPTX] status:%d [2:DISCONNECT, 4:CONNECT]\n", status);
--
--	if (status == MTK_DP_HPD_CONNECT) {
--		mtk_dp_init_port(mtk_dp);
--		mtk_dp_swirq_hpd(mtk_dp, TRUE);
--	} else
--		mtk_dp_swirq_hpd(mtk_dp, FALSE);
--
--	mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_35C0, status,
--			SW_IRQ_SET_DP_TRANS_P0_MASK);
--}
--
- static void mtk_dp_poweroff(struct mtk_dp *mtk_dp)
- {
- 	mutex_lock(&mtk_dp->dp_lock);
-@@ -2582,11 +2588,6 @@ static int mtk_dp_poweron(struct mtk_dp *mtk_dp)
- 		dev_err(mtk_dp->dev, "Failed to initialize phy: %d\n", ret);
- 		goto err_phy_init;
- 	}
--	ret = mtk_dp_phy_configure(mtk_dp, MTK_DP_LINKRATE_RBR, 1);
--	if (ret) {
--		dev_err(mtk_dp->dev, "Failed to configure phy: %d\n", ret);
--		goto err_phy_config;
--	}
- 
- 	mtk_dp_init_port(mtk_dp);
- 	mtk_dp_power_enable(mtk_dp);
-@@ -2608,15 +2609,15 @@ static int mtk_dp_bridge_attach(struct drm_bridge *bridge,
- 	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
- 	int ret;
- 
--	ret = mtk_dp_poweron(mtk_dp);
--	if (ret)
--		return ret;
--
- 	if (!(flags & DRM_BRIDGE_ATTACH_NO_CONNECTOR)) {
- 		dev_err(mtk_dp->dev, "Driver does not provide a connector!");
- 		return -EINVAL;
+ 		pd->num_smi = 0;
+-		dev_info(scpsys->dev, "dts not set, skip smi clamp protection.\n");
  	}
  
-+	ret = mtk_dp_poweron(mtk_dp);
-+	if (ret)
-+		return ret;
-+
- 	if (mtk_dp->next_bridge) {
- 		ret = drm_bridge_attach(bridge->encoder, mtk_dp->next_bridge,
- 					&mtk_dp->bridge, flags);
-@@ -2628,7 +2629,6 @@ static int mtk_dp_bridge_attach(struct drm_bridge *bridge,
- 	}
- 
- 	mtk_dp->drm_dev = bridge->dev;
--
- 	return 0;
- 
- err_bridge_attach:
-@@ -2641,6 +2641,7 @@ static void mtk_dp_bridge_detach(struct drm_bridge *bridge)
- 	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
- 
- 	mtk_dp->drm_dev = NULL;
-+
- 	mtk_dp_poweroff(mtk_dp);
- }
- 
-@@ -2649,6 +2650,11 @@ static void mtk_dp_bridge_atomic_disable(struct drm_bridge *bridge,
- {
- 	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
- 
-+	if (mtk_dp_plug_state(mtk_dp)) {
-+		drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER, DP_SET_POWER_D3);
-+		usleep_range(2000, 3000);
-+	}
-+
- 	mtk_dp_video_mute(mtk_dp, true);
- 	mtk_dp_audio_mute(mtk_dp, true);
- 	mtk_dp->state = MTK_DP_STATE_IDLE;
-@@ -2673,25 +2679,25 @@ static void mtk_dp_bridge_atomic_enable(struct drm_bridge *bridge,
- 					struct drm_bridge_state *old_state)
- {
- 	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
-+	struct drm_connector *conn;
- 	struct drm_connector_state *conn_state;
- 	struct drm_crtc *crtc;
- 	struct drm_crtc_state *crtc_state;
--	int ret;
-+	int ret = 0;
-+	int i;
- 
--	mtk_dp->conn = drm_atomic_get_new_connector_for_encoder(old_state->base.state,
--								bridge->encoder);
--	if (!mtk_dp->conn) {
-+	conn = drm_atomic_get_new_connector_for_encoder(old_state->base.state,
-+							bridge->encoder);
-+	if (!conn) {
- 		drm_err(mtk_dp->drm_dev,
- 			"Can't enable bridge as connector is missing\n");
- 		return;
- 	}
- 
--	mutex_lock(&mtk_dp->eld_lock);
--	memcpy(mtk_dp->connector_eld, mtk_dp->conn->eld, MAX_ELD_BYTES);
--	mutex_unlock(&mtk_dp->eld_lock);
-+	memcpy(mtk_dp->connector_eld, conn->eld, MAX_ELD_BYTES);
- 
- 	conn_state =
--		drm_atomic_get_new_connector_state(old_state->base.state, mtk_dp->conn);
-+		drm_atomic_get_new_connector_state(old_state->base.state, conn);
- 	if (!conn_state) {
- 		drm_err(mtk_dp->drm_dev,
- 			"Can't enable bridge as connector state is missing\n");
-@@ -2719,25 +2725,28 @@ static void mtk_dp_bridge_atomic_enable(struct drm_bridge *bridge,
- 		return;
- 	}
- 
--	ret = mtk_dp_train_handler(mtk_dp);
--	if (ret) {
--		drm_err(mtk_dp->drm_dev, "Train handler failed %d\n", ret);
--		return;
--	}
--
--	mtk_dp->audio_enable = mtk_dp_edid_parse_audio_capabilities(mtk_dp,
--		&mtk_dp->info.audio_cur_cfg);
-+	//training
-+	for (i = 0; i < 50; i++) {
-+		ret = mtk_dp_train_handler(mtk_dp);
-+		if (ret) {
-+			drm_err(mtk_dp->drm_dev, "Train handler failed %d\n",
-+				ret);
-+			return;
-+		}
- 
--	if (mtk_dp->audio_enable) {
--		mtk_dp_audio_setup(mtk_dp, &mtk_dp->info.audio_cur_cfg);
--		mtk_dp_audio_mute(mtk_dp, false);
--	} else {
--		memset(&mtk_dp->info.audio_cur_cfg, 0,
--			sizeof(mtk_dp->info.audio_cur_cfg));
-+		ret = mtk_dp_state_handler(mtk_dp);
-+		if (ret) {
-+			drm_err(mtk_dp->drm_dev, "State handler failed %d\n",
-+				ret);
-+			return;
-+		}
- 	}
- 
- 	mtk_dp->enabled = true;
- 	mtk_dp_update_plugged_status(mtk_dp);
-+
-+	dev_dbg(mtk_dp->dev, "DPTX calc pixel clock = %d MHz\n",
-+		mtk_dp_read(mtk_dp, 0x33c8) * mtk_dp->train_info.link_rate * 27 / 0x8000);
- }
- 
- static enum drm_mode_status
-@@ -2763,11 +2772,10 @@ mtk_dp_bridge_mode_valid(struct drm_bridge *bridge,
- 	return MODE_OK;
- }
- 
--static u32 *mtk_dp_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
--						     struct drm_bridge_state *bridge_state,
--						     struct drm_crtc_state *crtc_state,
--						     struct drm_connector_state *conn_state,
--						     unsigned int *num_output_fmts)
-+static u32 *mtk_dp_bridge_atomic_get_output_bus_fmts(
-+	struct drm_bridge *bridge, struct drm_bridge_state *bridge_state,
-+	struct drm_crtc_state *crtc_state,
-+	struct drm_connector_state *conn_state, unsigned int *num_output_fmts)
- {
- 	u32 *output_fmts;
- 
-@@ -2786,12 +2794,11 @@ static const u32 mt8195_input_fmts[] = {
- 	MEDIA_BUS_FMT_YUYV8_1X16,
- };
- 
--static u32 *mtk_dp_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
--						    struct drm_bridge_state *bridge_state,
--						    struct drm_crtc_state *crtc_state,
--						    struct drm_connector_state *conn_state,
--						    u32 output_fmt,
--						    unsigned int *num_input_fmts)
-+static u32 *mtk_dp_bridge_atomic_get_input_bus_fmts(
-+	struct drm_bridge *bridge, struct drm_bridge_state *bridge_state,
-+	struct drm_crtc_state *crtc_state,
-+	struct drm_connector_state *conn_state, u32 output_fmt,
-+	unsigned int *num_input_fmts)
- {
- 	u32 *input_fmts;
- 	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
-@@ -2799,10 +2806,7 @@ static u32 *mtk_dp_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
- 	struct drm_display_info *display_info =
- 		&conn_state->connector->display_info;
- 	u32 rx_linkrate;
--	u32 bpp;
- 
--	bpp = (display_info->color_formats & DRM_COLOR_FORMAT_YCBCR422) ? 16 :
--										24;
- 	rx_linkrate = (u32)mtk_dp->train_info.link_rate * 27000;
- 	*num_input_fmts = 0;
- 	input_fmts = kcalloc(ARRAY_SIZE(mt8195_input_fmts), sizeof(*input_fmts),
-@@ -2839,9 +2843,9 @@ static int mtk_dp_bridge_atomic_check(struct drm_bridge *bridge,
- 
- 	input_bus_format = bridge_state->input_bus_cfg.format;
- 
--	dev_dbg(mtk_dp->dev, "input format 0x%04x, output format 0x%04x\n",
--		bridge_state->input_bus_cfg.format,
--		bridge_state->output_bus_cfg.format);
-+	dev_info(mtk_dp->dev, "input format 0x%04x, output format 0x%04x\n",
-+		 bridge_state->input_bus_cfg.format,
-+		 bridge_state->output_bus_cfg.format);
- 
- 	mtk_dp->input_fmt = input_bus_format;
- 	if (mtk_dp->input_fmt == MEDIA_BUS_FMT_YUYV8_1X16)
-@@ -2852,40 +2856,6 @@ static int mtk_dp_bridge_atomic_check(struct drm_bridge *bridge,
- 	return 0;
- }
- 
--static void mtk_dp_bridge_hpd_notify(struct drm_bridge *bridge,
--				     enum drm_connector_status status)
--{
--	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
--	struct mtk_dp_train_info *train_info = &mtk_dp->train_info;
--
--	if (!mtk_dp_is_edp(mtk_dp)) {
--		if (mtk_dp->hpd_state != status) {
--			if (status == connector_status_disconnected) {
--				train_info->cable_plugged_in = false;
--				mtk_dp->train_state = MTK_DP_TRAIN_STATE_STARTUP;
--			} else {
--				mtk_dp_init_port(mtk_dp);
--				mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_3414,
--					HPD_OVR_EN_DP_TRANS_P0_MASK,
--					HPD_OVR_EN_DP_TRANS_P0_MASK);
--				mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_3414,
--					HPD_SET_DP_TRANS_P0_MASK,
--					HPD_SET_DP_TRANS_P0_MASK);
--				train_info->cable_plugged_in = true;
--			}
--
--			train_info->cable_state_change = true;
--			mtk_dp->hpd_state = status;
--
--			if (mtk_dp->drm_dev)
--				drm_helper_hpd_irq_event(mtk_dp->bridge.dev);
--
--			mtk_dp_train(mtk_dp);
--			mtk_dp_hpd_sink_event(mtk_dp);
--		}
--	}
--}
--
- static const struct drm_bridge_funcs mtk_dp_bridge_funcs = {
- 	.atomic_check = mtk_dp_bridge_atomic_check,
- 	.atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
-@@ -2900,7 +2870,6 @@ static const struct drm_bridge_funcs mtk_dp_bridge_funcs = {
- 	.mode_valid = mtk_dp_bridge_mode_valid,
- 	.get_edid = mtk_dp_get_edid,
- 	.detect = mtk_dp_bdg_detect,
--	.hpd_notify = mtk_dp_bridge_hpd_notify,
- };
- 
- static void mtk_dp_debounce_timer(struct timer_list *t)
-@@ -2925,11 +2894,11 @@ static int mtk_dp_audio_hw_params(struct device *dev, void *data,
- 		return -ENODEV;
- 	}
- 
--	mtk_dp->info.audio_cur_cfg.channels = params->cea.channels;
--	mtk_dp->info.audio_cur_cfg.sample_rate = params->sample_rate;
--	mtk_dp->info.audio_cur_cfg.word_length_bits = 24;
-+	cfg.channels = params->cea.channels;
-+	cfg.sample_rate = params->sample_rate;
-+	cfg.word_length_bits = 24;
- 
--	mtk_dp_audio_setup(mtk_dp, &mtk_dp->info.audio_cur_cfg);
-+	mtk_dp_audio_setup(mtk_dp, &cfg);
- 
- 	return 0;
- }
-@@ -2960,6 +2929,8 @@ static int mtk_dp_audio_get_eld(struct device *dev, void *data, uint8_t *buf,
- 	else
- 		memset(buf, 0, len);
- 
-+	dev_dbg(mtk_dp->dev, "get eld: %*ph\n", (int)len, buf);
-+
- 	return 0;
- }
- 
-@@ -3021,34 +2992,46 @@ static int mtk_dp_probe(struct platform_device *pdev)
- {
- 	struct mtk_dp *mtk_dp;
- 	struct device *dev = &pdev->dev;
--	const struct of_device_id *of_id;
- 	int ret;
- 	int irq_num = 0;
-+	struct drm_panel *panel = NULL;
-+	const struct of_device_id *of_id;
- 
- 	mtk_dp = devm_kzalloc(dev, sizeof(*mtk_dp), GFP_KERNEL);
- 	if (!mtk_dp)
- 		return -ENOMEM;
- 
- 	mtk_dp->dev = dev;
-+
- 	irq_num = platform_get_irq(pdev, 0);
- 	if (irq_num < 0) {
- 		dev_err(dev, "failed to request dp irq resource\n");
--		return irq_num;
-+		return -EPROBE_DEFER;
- 	}
- 
--	mtk_dp->hpd_state = connector_status_disconnected;
--
--	mtk_dp->next_bridge = devm_drm_of_get_bridge(dev, dev->of_node, 1, 0);
--	if (IS_ERR(mtk_dp->next_bridge) && PTR_ERR(mtk_dp->next_bridge) == -ENODEV) {
--		dev_info(dev,
--			 "No panel connected in devicetree, continuing as external DP\n");
-+	ret = drm_of_find_panel_or_bridge(dev->of_node, 1, 0, &panel,
-+					  &mtk_dp->next_bridge);
-+	if (ret == -ENODEV) {
-+		dev_info(
-+			dev,
-+			"No panel connected in devicetree, continuing as external DP\n");
- 		mtk_dp->next_bridge = NULL;
--	} else if (IS_ERR(mtk_dp->next_bridge)) {
--		ret = PTR_ERR(mtk_dp->next_bridge);
--		return dev_err_probe(dev, ret, "Failed to get bridge\n");
-+	} else if (ret) {
-+		return dev_err_probe(dev, ret,
-+				     "Failed to find panel or bridge: %d\n",
-+				     ret);
-+	}
-+
-+	if (panel) {
-+		mtk_dp->next_bridge = devm_drm_panel_bridge_add(dev, panel);
-+		if (IS_ERR(mtk_dp->next_bridge)) {
-+			ret = PTR_ERR(mtk_dp->next_bridge);
-+			dev_err(dev, "Failed to create bridge: %d\n", ret);
-+			return -EPROBE_DEFER;
-+		}
- 	}
- 
--	ret = mtk_dp_dt_parse(mtk_dp, pdev);
-+	ret = mtk_dp_dt_parse_pdata(mtk_dp, pdev);
- 	if (ret)
- 		return ret;
- 
-@@ -3065,14 +3048,14 @@ static int mtk_dp_probe(struct platform_device *pdev)
- 
- 	mutex_init(&mtk_dp->dp_lock);
- 	mutex_init(&mtk_dp->edid_lock);
--	mutex_init(&mtk_dp->eld_lock);
--	mutex_init(&mtk_dp->update_plugged_status_lock);
- 
- 	platform_set_drvdata(pdev, mtk_dp);
- 
- 	if (!mtk_dp_is_edp(mtk_dp)) {
-+		mutex_init(&mtk_dp->update_plugged_status_lock);
- 		of_id = of_match_device(mtk_dp_of_match, &pdev->dev);
- 		mtk_dp->driver_data = (struct mtk_dp_driver_data *)of_id->data;
-+
- 		ret = mtk_dp_register_audio_driver(dev);
- 		if (ret) {
- 			dev_err(dev, "Failed to register audio driver: %d\n",
-@@ -3084,7 +3067,7 @@ static int mtk_dp_probe(struct platform_device *pdev)
- 	mtk_dp->phy_dev = platform_device_register_data(dev, "mediatek-dp-phy",
- 							PLATFORM_DEVID_AUTO,
- 							&mtk_dp->regs,
--							sizeof(struct regmap *));
-+							sizeof(&mtk_dp->regs));
- 	if (IS_ERR(mtk_dp->phy_dev)) {
- 		dev_err(dev, "Failed to create device mediatek-dp-phy: %ld\n",
- 			PTR_ERR(mtk_dp->phy_dev));
-@@ -3102,19 +3085,18 @@ static int mtk_dp_probe(struct platform_device *pdev)
- 
- 	mtk_dp->bridge.funcs = &mtk_dp_bridge_funcs;
- 	mtk_dp->bridge.of_node = dev->of_node;
--
--	mtk_dp->bridge.ops =
--		DRM_BRIDGE_OP_DETECT | DRM_BRIDGE_OP_EDID | DRM_BRIDGE_OP_HPD;
- 	if (mtk_dp_is_edp(mtk_dp))
- 		mtk_dp->bridge.type = DRM_MODE_CONNECTOR_eDP;
- 	else
- 		mtk_dp->bridge.type = DRM_MODE_CONNECTOR_DisplayPort;
- 
--	drm_bridge_add(&mtk_dp->bridge);
--
- 	mtk_dp->need_debounce = true;
- 	timer_setup(&mtk_dp->debounce_timer, mtk_dp_debounce_timer, 0);
- 
-+	mtk_dp->bridge.ops =
-+		DRM_BRIDGE_OP_DETECT | DRM_BRIDGE_OP_EDID | DRM_BRIDGE_OP_HPD;
-+	drm_bridge_add(&mtk_dp->bridge);
-+
- 	pm_runtime_enable(dev);
- 	pm_runtime_get_sync(dev);
- 
-@@ -3146,13 +3128,8 @@ static int mtk_dp_suspend(struct device *dev)
- 		usleep_range(2000, 3000);
- 	}
- 
--	if (!mtk_dp_is_edp(mtk_dp)) {
--		mtk_dp_swirq_enable(mtk_dp, false);
--		mtk_dp_swirq_hpd_interrupt_set(mtk_dp, MTK_DP_HPD_DISCONNECT);
--	} else
--		mtk_dp_hwirq_enable(mtk_dp, false);
--
- 	mtk_dp_power_disable(mtk_dp);
-+	mtk_dp_hwirq_enable(mtk_dp, false);
- 
- 	pm_runtime_put_sync(dev);
- 
-@@ -3167,12 +3144,7 @@ static int mtk_dp_resume(struct device *dev)
- 
- 	mtk_dp_init_port(mtk_dp);
- 	mtk_dp_power_enable(mtk_dp);
--
--	if (!mtk_dp_is_edp(mtk_dp)) {
--		mtk_dp_swirq_enable(mtk_dp, true);
--		mtk_dp_swirq_hpd_interrupt_set(mtk_dp, MTK_DP_HPD_CONNECT);
--	} else
--		mtk_dp_hwirq_enable(mtk_dp, true);
-+	mtk_dp_hwirq_enable(mtk_dp, true);
- 
- 	return 0;
- }
-diff --git a/sound/soc/mediatek/mt8188/mt8390-evk.c b/sound/soc/mediatek/mt8188/mt8390-evk.c
-index ade8fcfadd8e..1301bc315202 100644
---- a/sound/soc/mediatek/mt8188/mt8390-evk.c
-+++ b/sound/soc/mediatek/mt8188/mt8390-evk.c
-@@ -20,6 +20,8 @@
- #include "../common/mtk-soundcard-driver.h"
- #include "mt8188-afe-clk.h"
+ 	pd->num_larb = of_count_phandle_with_args(node, "mediatek,larb", NULL);
+diff --git a/sound/soc/mediatek/mt8188/mt8188-mt6359.c b/sound/soc/mediatek/mt8188/mt8188-mt6359.c
+index 6d2e7641e9dd..6f38bd2dcf73 100644
+--- a/sound/soc/mediatek/mt8188/mt8188-mt6359.c
++++ b/sound/soc/mediatek/mt8188/mt8188-mt6359.c
+@@ -14,6 +14,8 @@
+ #include <sound/jack.h>
+ #include <sound/pcm_params.h>
+ #include <sound/soc.h>
++#include <linux/clk.h> //20250905
++#include <sound/simple_card_utils.h> //20250905
  #include "mt8188-afe-common.h"
-+#include <linux/clk.h> // add by AAEON Andrew for tlv320
-+#include <sound/simple_card_utils.h> // add by AAEON Andrew for tlv320
+ #include "../../codecs/nau8825.h"
+ #include "../../codecs/mt6359.h"
+@@ -56,6 +58,8 @@
  
- #define SOF_DMA_DL2 "SOF_DMA_DL2"
- #define SOF_DMA_DL3 "SOF_DMA_DL3"
-@@ -81,6 +83,52 @@ static const struct snd_soc_dapm_route mt8188_mt6359_routes[] = {
+ #define RT5682S_CODEC_DAI     "rt5682s-aif1"
+ 
++#define TLV320AIC_CODEC_DAI	"tlv320aic3x-hifi" //20250905
++
+ /* FE */
+ SND_SOC_DAILINK_DEFS(playback2,
+ 		     DAILINK_COMP_ARRAY(COMP_CPU("DL2")),
+@@ -354,6 +358,53 @@ static const struct snd_soc_dapm_route mt8188_mt6359_routes[] = {
  	{"I021", NULL, SOF_DMA_DL3},
  };
  
++//20250905
 +int asoc_simple_dai_init_for_tlv320(struct snd_soc_pcm_runtime *rtd)
 +{
 +	struct asoc_simple_priv *priv = snd_soc_card_get_drvdata(rtd->card);
@@ -2483,7 +1967,7 @@ index ade8fcfadd8e..1301bc315202 100644
 +		struct snd_soc_dai *sdai;
 +		int i=0;
 +		for_each_rtd_codec_dais(rtd, i, sdai) {
-+			if (strcmp(sdai->name, "tlv320aic3x-hifi") == 0) {
++			if (strcmp(sdai->name, TLV320AIC_CODEC_DAI) == 0) {
 +				ret = snd_soc_dai_set_sysclk(sdai, 0, mclk_fs, SND_SOC_CLOCK_IN);
 +				if (ret && ret != -ENOTSUPP)
 +					return ret;
@@ -2495,69 +1979,63 @@ index ade8fcfadd8e..1301bc315202 100644
 +}
 +
 +static const struct snd_soc_ops mt8188_etdm_ops_for_tlv320 = {
-+	.hw_params	= mt8188_etdm_hw_params_for_tlv320, //add by AAEON Andrew for tlv320
++	.hw_params	= mt8188_etdm_hw_params_for_tlv320,
 +};
 +
  static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
  {
  	struct snd_soc_component *cmpnt_afe =
-@@ -726,14 +774,14 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
- 		.ops = &mt8188_etdm_ops,
- 		SND_SOC_DAILINK_REG(ETDM1_IN_BE),
+@@ -1235,7 +1286,8 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+ 			SND_SOC_DAIFMT_CBP_CFP,
+ 		.dpcm_capture = 1,
+ 		.ignore_suspend = 1,
+-		.ops = &mt8188_etdm_ops,
++		//.ops = &mt8188_etdm_ops,
++		.ops = &mt8188_etdm_ops_for_tlv320, //20250905
+ 		SND_SOC_DAILINK_REG(etdm1_in),
  	},
--	[DAI_LINK_ETDM2_IN_BE] = {
-+	[DAI_LINK_ETDM2_IN_BE] = { // I2S2 IN
- 		.name = "ETDM2_IN_BE",
- 		.no_pcm = 1,
- 		.dai_fmt = SND_SOC_DAIFMT_I2S |
+ 	[DAI_LINK_ETDM2_IN_BE] = {
+@@ -1245,7 +1297,8 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  			SND_SOC_DAIFMT_NB_NF |
  			SND_SOC_DAIFMT_CBP_CFP,
  		.dpcm_capture = 1,
 -		.ops = &mt8188_etdm_ops,
-+		.ops = &mt8188_etdm_ops_for_tlv320, // add by AAEON Andrew fot tlv320
- 		SND_SOC_DAILINK_REG(ETDM2_IN_BE),
++		//.ops = &mt8188_etdm_ops,
++		.ops = &mt8188_etdm_ops_for_tlv320, //20250905
+ 		SND_SOC_DAILINK_REG(etdm2_in),
  	},
  	[DAI_LINK_ETDM1_OUT_BE] = {
-@@ -746,14 +794,14 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
- 		.ops = &mt8188_etdm_ops,
- 		SND_SOC_DAILINK_REG(ETDM1_OUT_BE),
- 	},
--	[DAI_LINK_ETDM2_OUT_BE] = {
-+	[DAI_LINK_ETDM2_OUT_BE] = { // I2S2 OUT
- 		.name = "ETDM2_OUT_BE",
+@@ -1263,9 +1316,10 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  		.no_pcm = 1,
  		.dai_fmt = SND_SOC_DAIFMT_I2S |
--			SND_SOC_DAIFMT_NB_NF |
+ 			SND_SOC_DAIFMT_NB_NF |
 -			SND_SOC_DAIFMT_CBC_CFC,
-+			SND_SOC_DAIFMT_NB_NF | // add by AAEON Andrew fot tlv320
 +			SND_SOC_DAIFMT_CBP_CFP,
  		.dpcm_playback = 1,
 -		.ops = &mt8188_etdm_ops,
-+		.ops = &mt8188_etdm_ops_for_tlv320, // add by AAEON Andrew fot tlv320
- 		SND_SOC_DAILINK_REG(ETDM2_OUT_BE),
++		//.ops = &mt8188_etdm_ops,
++		.ops = &mt8188_etdm_ops_for_tlv320, //20250905
+ 		SND_SOC_DAILINK_REG(etdm2_out),
  	},
  	[DAI_LINK_ETDM3_OUT_BE] = {
-@@ -947,6 +995,10 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
- 			if (strcmp(dai_link->codecs->dai_name, "snd-soc-dummy-dai"))
- 				dai_link->init = mt8188_mt6359_init;
- 		}
-+		else if (strcmp(dai_link->name, "ETDM2_OUT_BE") == 0 || strcmp(dai_link->name, "ETDM1_IN_BE") == 0 ) {	//add by AAEON Andrew for tlv320
-+			if (strcmp(dai_link->codecs->dai_name, "tlv320aic3x-hifi"))											//add by AAEON Andrew for tlv320
-+				dai_link->init = asoc_simple_dai_init_for_tlv320;												//add by AAEON Andrew for tlv320
-+		}																										//add by AAEON Andrew for tlv320
- 	}
+@@ -1377,6 +1431,7 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+ 	bool init_rt5682s = false;
+ 	bool init_max98390 = false;
+ 	bool init_dumb = false;
++	bool init_tlv320 = false;
+ 	int ret, i;
  
- 	snd_soc_card_set_drvdata(card, soc_card_data);
-diff --git a/tools/testing/selftests/ptp/Makefile b/tools/testing/selftests/ptp/Makefile
-index ef06de0898b7..0f0b15b4a9e7 100644
---- a/tools/testing/selftests/ptp/Makefile
-+++ b/tools/testing/selftests/ptp/Makefile
-@@ -1,4 +1,8 @@
- # SPDX-License-Identifier: GPL-2.0
-+CROSS_COMPILE ?= aarch64-linux-gnu-
-+CC = $(CROSS_COMPILE)gcc
-+LD = $(CROSS_COMPILE)ld
-+
- CFLAGS += -I../../../../usr/include/
- TEST_PROGS := testptp
- LDLIBS += -lrt
+ 	card_data = (struct mt8188_card_data *)of_device_get_match_data(&pdev->dev);
+@@ -1498,6 +1553,12 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+ 					dai_link->exit = mt8188_rt5682s_codec_exit;
+ 					init_rt5682s = true;
+ 				}
++			} else if (!strcmp(dai_link->codecs->dai_name, TLV320AIC_CODEC_DAI)) {
++				dai_link->ops = &mt8188_etdm_ops_for_tlv320;
++				if (!init_tlv320) {
++					dai_link->init = asoc_simple_dai_init_for_tlv320;
++					init_tlv320 = true;
++				}
+ 			} else {
+ 				if (strcmp(dai_link->codecs->dai_name, "snd-soc-dummy-dai")) {
+ 					if (!init_dumb) {

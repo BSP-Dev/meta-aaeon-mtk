@@ -1,10 +1,10 @@
 #!/bin/sh
 
-sed -i '32a\ \ ##OEROOT##/../meta-aaeon-mtk \\' src/meta-rity/meta/conf/bblayers.conf.sample
+sed -i '32a\ \ ##OEROOT##/../meta-aaeon-mtk \\' src/meta-rity/meta/conf/templates/default/bblayers.conf.sample
 
-sed -i 's/#MACHINE ??= "genio-510-evk"/MACHINE ??= "genio-510-evk"/' src/meta-rity/meta/conf/local.conf.sample
-sed -i 's/MACHINE ??= "genio-700-evk"/#MACHINE ??= "genio-700-evk"/' src/meta-rity/meta/conf/local.conf.sample
-sed -i '140a\EXTRA_IMAGE_FEATURES:append = " tools-sdk"\' src/meta-rity/meta/conf/local.conf.sample
+sed -i 's/#MACHINE ??= "genio-510-evk"/MACHINE ??= "genio-510-evk"/' src/meta-rity/meta/conf/templates/default/local.conf.sample
+sed -i 's/MACHINE ??= "genio-700-evk"/#MACHINE ??= "genio-700-evk"/' src/meta-rity/meta/conf/templates/default/local.conf.sample
+sed -i '140a\EXTRA_IMAGE_FEATURES:append = " tools-sdk"\' src/meta-rity/meta/conf/templates/default/local.conf.sample
 
 sed -i '/#IMAGE_INSTALL:append:i300a = "lib32-mtk-vpud"/a \
 # AAEON: Alan Modified: 24.08.27\
@@ -53,7 +53,7 @@ IMAGE_INSTALL:append = " gcc gcc-symlinks g++ g++-symlinks make cmake automake a
 IMAGE_INSTALL:append = " pulseaudio pulseaudio-module-dbus-protocol trace-cmd"\
 ###########################################################################' src/meta-rity/meta/conf/local.conf.sample
 
-cat << 'EOF' >> src/meta-rity/meta/conf/local.conf.sample
+cat << 'EOF' >> src/meta-rity/meta/conf/templates/default/local.conf.sample
 OPTEE_DRAM_SIZE:genio-510-evk = "0x200000000"
 LICENSE_FLAGS_ACCEPTED += "commercial_libav commercial_x264"
 
