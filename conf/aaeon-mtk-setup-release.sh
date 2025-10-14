@@ -51,7 +51,7 @@ IMAGE_INSTALL:append = " ttf-bitstream-vera tree openldap openvpn qpdf tcpdump h
 IMAGE_INSTALL:append = " modemmanager minicom python3-speedtest-cli"\
 IMAGE_INSTALL:append = " gcc gcc-symlinks g++ g++-symlinks make cmake automake autoconf libtool"\
 IMAGE_INSTALL:append = " pulseaudio pulseaudio-module-dbus-protocol trace-cmd"\
-###########################################################################' src/meta-rity/meta/conf/local.conf.sample
+###########################################################################' src/meta-rity/meta/conf/templates/default/local.conf.sample
 
 cat << 'EOF' >> src/meta-rity/meta/conf/templates/default/local.conf.sample
 OPTEE_DRAM_SIZE:genio-510-evk = "0x200000000"
