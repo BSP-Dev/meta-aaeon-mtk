@@ -1,8 +1,16 @@
 diff --git a/arch/arm64/boot/dts/mediatek/genio-700-evk.dts b/arch/arm64/boot/dts/mediatek/genio-700-evk.dts
-index 156440daa01c..01fd92dff0dc 100644
+index 5e0e020ac31f..5fbfd1828721 100644
 --- a/arch/arm64/boot/dts/mediatek/genio-700-evk.dts
 +++ b/arch/arm64/boot/dts/mediatek/genio-700-evk.dts
-@@ -20,16 +20,18 @@ aliases {
+@@ -4,6 +4,7 @@
+  * Author: Chris Chen <chris-qj.chen@mediatek.com>
+  */
+ /dts-v1/;
++#include "mt8370.dtsi"
+ #include "mt8188.dtsi"
+ #include "mt6359.dtsi"
+ #include <dt-bindings/gpio/gpio.h>
+@@ -20,16 +21,18 @@ aliases {
  		serial0 = &uart0;
  		dsi0 = &dsi0;
  		ethernet0 = &eth;
@@ -24,7 +32,7 @@ index 156440daa01c..01fd92dff0dc 100644
  	};
  
  	chosen {
-@@ -42,7 +44,7 @@ edp_panel_fixed_3v3: regulator@0 {
+@@ -42,7 +45,7 @@ edp_panel_fixed_3v3: regulator@0 {
  		regulator-min-microvolt = <3300000>;
  		regulator-max-microvolt = <3300000>;
  		enable-active-high;
@@ -33,7 +41,7 @@ index 156440daa01c..01fd92dff0dc 100644
  		pinctrl-names = "default";
  		pinctrl-0 = <&edp_panel_3v3_en_pins>;
  	};
-@@ -123,67 +125,11 @@ optee {
+@@ -123,67 +126,11 @@ optee {
  		};
  	};
  
@@ -101,7 +109,7 @@ index 156440daa01c..01fd92dff0dc 100644
  		enable-active-high;
  		regulator-always-on;
  	};
-@@ -193,17 +139,6 @@ VDD_3V3: VDD-3V3 {
+@@ -193,17 +140,6 @@ VDD_3V3: VDD-3V3 {
  		regulator-name = "VDD-3V3";
  		regulator-min-microvolt = <3300000>;
  		regulator-max-microvolt = <3300000>;
@@ -119,30 +127,7 @@ index 156440daa01c..01fd92dff0dc 100644
  		enable-active-high;
  		regulator-always-on;
  	};
-@@ -217,14 +152,14 @@ sdio_fixed_1v8: regulator@3 {
- 		regulator-always-on;
- 	};
- 
--	dsi0_en: dsi0-en {
--		compatible = "regulator-fixed";
--		regulator-name = "lcm1_en";
--		enable-active-high;
--		gpio = <&pio 111 GPIO_ACTIVE_HIGH>;
--		pinctrl-names = "default";
--		pinctrl-0 = <&dsi0_en_pins_default>;
--	};
-+	// dsi0_en: dsi0-en {
-+	// 	compatible = "regulator-fixed";
-+	// 	regulator-name = "lcm1_en";
-+	// 	enable-active-high;
-+	// 	gpio = <&pio 111 GPIO_ACTIVE_HIGH>;
-+	// 	pinctrl-names = "default";
-+	// 	pinctrl-0 = <&dsi0_en_pins_default>;
-+	// };
- 
- 	mtk_fsource: fsource {
- 		compatible = "mtk-fsource";
-@@ -339,6 +274,7 @@ &auxadc {
+@@ -325,6 +261,7 @@ &auxadc {
  };
  
  &afe {
@@ -150,7 +135,7 @@ index 156440daa01c..01fd92dff0dc 100644
  	memory-region = <&afe_dma_mem_reserved>;
  	#sound-dai-cells = <0>;
  	mediatek,dmic-iir-on;
-@@ -379,7 +315,7 @@ &dpi1 {
+@@ -365,7 +302,7 @@ &dpi1 {
  };
  
  &dp_intf1 {
@@ -159,7 +144,7 @@ index 156440daa01c..01fd92dff0dc 100644
  	mediatek,oob-hpd;
  	ports {
  		port {
-@@ -393,7 +329,7 @@ dp_intf1_out: endpoint {
+@@ -379,7 +316,7 @@ dp_intf1_out: endpoint {
  &dp_tx {
  	pinctrl-names = "default";
  	pinctrl-0 = <&dptx_pin>;
@@ -168,32 +153,44 @@ index 156440daa01c..01fd92dff0dc 100644
  
  	ports {
  		#address-cells = <1>;
-@@ -409,18 +345,17 @@ dptx_in: endpoint {
+@@ -395,18 +332,18 @@ dptx_in: endpoint {
  &dsi0 {
  	#address-cells = <1>;
  	#size-cells = <0>;
 -	status = "okay";
-+	status = "disable";
++	status = "disabled";
  	poweron-in-hs-mode = <0>;
  
  	panel@0 {
  		compatible = "startek,kd070fhfid015";
 -		status = "okay";
-+		status = "disable";
++		status = "disabled";
  		reg = <0>;
 -		pinctrl-names = "default";
 -		pinctrl-0 = <&panel_pins_default>;
 -		reset-gpios = <&pio 25 GPIO_ACTIVE_HIGH>;
 -		dcdc-gpios = <&pio 45 GPIO_ACTIVE_HIGH>;
--		iovcc-supply = <&dsi0_en>;
+-		enable-gpios = <&pio 111 GPIO_ACTIVE_HIGH>;
 +		// pinctrl-names = "default";
 +		// pinctrl-0 = <&panel_pins_default>;
++		// reset-gpios = <&pio 25 GPIO_ACTIVE_HIGH>;
 +		// dcdc-gpios = <&pio 45 GPIO_ACTIVE_HIGH>;
-+		// iovcc-supply = <&dsi0_en>;
++		// enable-gpios = <&pio 111 GPIO_ACTIVE_HIGH>;
  		port {
  			panel0_in: endpoint {
  				remote-endpoint = <&dsi0_out>;
-@@ -442,6 +377,30 @@ &hdmi0 {
+@@ -423,11 +360,41 @@ dsi0_out: endpoint {
+ 	};
+ };
+ 
++&disp_pwm1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&disp_pwm1_pin_default>;
++	status = "okay";
++};
++
+ &hdmi0 {
+ 	status = "okay";
  };
  
  &pio {
@@ -224,7 +221,7 @@ index 156440daa01c..01fd92dff0dc 100644
  	aud_pins_default: audiodefault {
  		pins-cmd-dat {
  			pinmux = <PINMUX_GPIO101__FUNC_O_AUD_CLK_MOSI>,
-@@ -462,16 +421,13 @@ pins-cmd-dat {
+@@ -448,16 +415,13 @@ pins-cmd-dat {
  				 <PINMUX_GPIO125__FUNC_O_DMIC1_CLK>,
  				 <PINMUX_GPIO126__FUNC_I0_DMIC1_DAT>,
  				 <PINMUX_GPIO128__FUNC_O_DMIC2_CLK>,
@@ -243,7 +240,7 @@ index 156440daa01c..01fd92dff0dc 100644
  			output-high;
  		};
  	};
-@@ -556,7 +512,9 @@ pins {
+@@ -542,7 +506,9 @@ pins {
  	uart1_pins: uart1-pins {
  		pins {
  			pinmux = <PINMUX_GPIO33__FUNC_O_UTXD1>,
@@ -254,7 +251,7 @@ index 156440daa01c..01fd92dff0dc 100644
  			bias-pull-up;
  		};
  	};
-@@ -564,17 +522,26 @@ pins {
+@@ -550,17 +516,26 @@ pins {
  	uart2_pins: uart2-pins {
  		pins {
  			pinmux = <PINMUX_GPIO35__FUNC_O_UTXD2>,
@@ -283,7 +280,7 @@ index 156440daa01c..01fd92dff0dc 100644
  		};
  	};
  
-@@ -583,7 +550,7 @@ pins-bus {
+@@ -569,7 +544,7 @@ pins-bus {
  			pinmux = <PINMUX_GPIO58__FUNC_B1_SDA1>,
  				 <PINMUX_GPIO57__FUNC_B1_SCL1>;
  			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
@@ -292,7 +289,7 @@ index 156440daa01c..01fd92dff0dc 100644
  		};
  	};
  
-@@ -632,14 +599,6 @@ pins-bus {
+@@ -618,14 +593,6 @@ pins-bus {
  		};
  	};
  
@@ -307,7 +304,7 @@ index 156440daa01c..01fd92dff0dc 100644
  	kpd_gpios_def_cfg: keypad-pins-default {
  		pins_kp {
  			pinmux = <PINMUX_GPIO44__FUNC_B1_KPROW0>,
-@@ -648,24 +607,19 @@ pins_kp {
+@@ -634,20 +601,26 @@ pins_kp {
  		};
  	};
  
@@ -316,35 +313,37 @@ index 156440daa01c..01fd92dff0dc 100644
 -			pinmux = <PINMUX_GPIO45__FUNC_B_GPIO45>;
 -			output-low;
 -		};
--
--		panel-rst {
--			pinmux = <PINMUX_GPIO25__FUNC_B_GPIO25>;
--			output-high;
--		};
--	};
 +	// panel_pins_default: panel-pins-default {
 +	// 	panel-dcdc {
 +	// 		pinmux = <PINMUX_GPIO45__FUNC_B_GPIO45>;
 +	// 		output-low;
 +	// 	};
-+	// };
  
--	dsi0_en_pins_default: dsi0-en-pins-default {
 -		panel-en {
 -			pinmux = <PINMUX_GPIO111__FUNC_B_GPIO111>;
 -			output-low;
 -		};
--	};
-+	// dsi0_en_pins_default: dsi0-en-pins-default {
 +	// 	panel-en {
 +	// 		pinmux = <PINMUX_GPIO111__FUNC_B_GPIO111>;
 +	// 		output-low;
 +	// 	};
-+	// };
  
- 	mmc0_pins_default: mmc0default {
- 		pins-cmd-dat {
-@@ -774,72 +728,6 @@ pins-clk {
+-		panel-rst {
+-			pinmux = <PINMUX_GPIO25__FUNC_B_GPIO25>;
+-			output-high;
++	// 	panel-rst {
++	// 		pinmux = <PINMUX_GPIO25__FUNC_B_GPIO25>;
++	// 		output-high;
++	// 	};
++	// };
++
++	disp_pwm1_pin_default: disp-pwm1-pin-default {
++		pins1 {
++			pinmux = <PINMUX_GPIO30__FUNC_O_DISP_PWM1>;
+ 		};
+ 	};
+ 
+@@ -758,72 +731,6 @@ pins-clk {
  		};
  	};
  
@@ -417,7 +416,7 @@ index 156440daa01c..01fd92dff0dc 100644
  	spi0_pins: spi0-pins {
  		pins-spi {
  			pinmux = <PINMUX_GPIO69__FUNC_O_SPIM0_CSB>,
-@@ -870,6 +758,13 @@ pins-spi {
+@@ -854,6 +761,13 @@ pins-spi {
  		};
  	};
  
@@ -431,7 +430,7 @@ index 156440daa01c..01fd92dff0dc 100644
  	pcie_pins_default: pcie-default {
  		mux {
  			pinmux = <PINMUX_GPIO47__FUNC_I1_WAKEN>,
-@@ -886,41 +781,11 @@ iddig-pin {
+@@ -870,41 +784,11 @@ iddig-pin {
  			bias-pull-up;
  		};
  
@@ -473,7 +472,7 @@ index 156440daa01c..01fd92dff0dc 100644
  };
  
  &i2c0 {
-@@ -928,18 +793,14 @@ &i2c0 {
+@@ -912,18 +796,14 @@ &i2c0 {
  	pinctrl-0 = <&i2c0_pin>;
  	clock-frequency = <400000>;
  	status = "okay";
@@ -500,7 +499,7 @@ index 156440daa01c..01fd92dff0dc 100644
  };
  
  &i2c1 {
-@@ -947,14 +808,6 @@ &i2c1 {
+@@ -931,14 +811,6 @@ &i2c1 {
  	pinctrl-0 = <&i2c1_pin>;
  	clock-frequency = <400000>;
  	status = "okay";
@@ -515,7 +514,7 @@ index 156440daa01c..01fd92dff0dc 100644
  };
  
  &i2c2 {
-@@ -974,58 +827,12 @@ &i2c3 {
+@@ -958,58 +830,12 @@ &i2c3 {
  &i2c4 {
  	pinctrl-names = "default", "default";
  	pinctrl-0 = <&i2c4_pin>;
@@ -577,7 +576,7 @@ index 156440daa01c..01fd92dff0dc 100644
  	};
  };
  
-@@ -1041,6 +848,16 @@ &i2c6 {
+@@ -1025,6 +851,16 @@ &i2c6 {
  	pinctrl-0 = <&i2c6_pin>;
  	clock-frequency = <400000>;
  	status = "okay";
@@ -594,7 +593,7 @@ index 156440daa01c..01fd92dff0dc 100644
  };
  
  &pmic {
-@@ -1132,6 +949,12 @@ &uart2 {
+@@ -1116,6 +952,12 @@ &uart2 {
  	status = "okay";
  };
  
@@ -607,7 +606,7 @@ index 156440daa01c..01fd92dff0dc 100644
  &mipi_tx0 {
  	status = "okay";
  };
-@@ -1181,46 +1004,27 @@ &mt6359_vsim1_ldo_reg {
+@@ -1165,46 +1007,27 @@ &mt6359_vsim1_ldo_reg {
  	regulator-enable-ramp-delay = <480>;
  };
  
@@ -669,7 +668,7 @@ index 156440daa01c..01fd92dff0dc 100644
  	pinctrl-names = "default";
  	mediatek,pad-select = <0>;
  	#address-cells = <1>;
-@@ -1234,6 +1038,22 @@ spidev@0 {
+@@ -1218,6 +1041,22 @@ spidev@0 {
  	};
  };
  
@@ -692,7 +691,7 @@ index 156440daa01c..01fd92dff0dc 100644
  &spmi {
  	mt6315_6: mt6315@6 {
  		compatible = "mediatek,mt6315-regulator";
-@@ -1296,7 +1116,6 @@ connector {
+@@ -1280,7 +1119,6 @@ connector {
  		compatible = "gpio-usb-b-connector", "usb-b-connector";
  		type = "micro";
  		id-gpios = <&pio 83 GPIO_ACTIVE_HIGH>;
@@ -700,7 +699,7 @@ index 156440daa01c..01fd92dff0dc 100644
  	};
  };
  
-@@ -1314,20 +1133,12 @@ &usb_host0 {
+@@ -1298,20 +1136,12 @@ &usb_host0 {
  };
  
  &ssusb1 {
@@ -721,7 +720,7 @@ index 156440daa01c..01fd92dff0dc 100644
  };
  
  &u2port1 {
-@@ -1345,7 +1156,6 @@ &u3phy1 {
+@@ -1329,7 +1159,6 @@ &u3phy1 {
  &usb_host1 {
  	status = "okay";
  	vusb33-supply = <&mt6359_vusb_ldo_reg>;
@@ -729,7 +728,7 @@ index 156440daa01c..01fd92dff0dc 100644
  };
  
  &ssusb2 {
-@@ -1355,13 +1165,6 @@ &ssusb2 {
+@@ -1339,13 +1168,6 @@ &ssusb2 {
  	vusb33-supply = <&mt6359_vusb_ldo_reg>;
  	status = "okay";
  	wakeup-source;
@@ -743,18 +742,7 @@ index 156440daa01c..01fd92dff0dc 100644
  };
  
  &u2port2 {
-@@ -1408,10 +1211,6 @@ codec-0 {
- 		codec-1 {
- 			sound-dai = <&amic_codec>;
- 		};
--
--		codec-2 {
--			sound-dai = <&accdet>;
--		};
- 	};
- 
- 	dai-link-1 {
-@@ -1427,7 +1226,7 @@ codec-0 {
+@@ -1407,7 +1229,7 @@ codec-0 {
  	dai-link-2 {
  		sound-dai = <&afe>;
  		dai-link-name = "DPTX_BE";
@@ -763,7 +751,7 @@ index 156440daa01c..01fd92dff0dc 100644
  
  		codec-0 {
  			sound-dai = <&dp_tx>;
-@@ -1443,6 +1242,26 @@ codec-0 {
+@@ -1423,6 +1245,26 @@ codec-0 {
  			sound-dai = <&dmic_codec>;
  		};
  	};
@@ -789,12 +777,12 @@ index 156440daa01c..01fd92dff0dc 100644
 +	};
  };
  
- &accdet {
+ &cam_vcore {
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188.dtsi b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
-index 195b53577dd2..521a3a9b2db1 100644
+index 04080ec3d7d0..f163dc670236 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8188.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
-@@ -2987,13 +2987,13 @@ soc-max {
+@@ -2975,13 +2975,13 @@ soc-max {
  
  				trips {
  					threshold: trip-point@0 {
@@ -810,7 +798,7 @@ index 195b53577dd2..521a3a9b2db1 100644
  						hysteresis = <2000>;
  						type = "passive";
  					};
-@@ -3129,6 +3129,8 @@ pcie: pcie@112f0000 {
+@@ -3117,6 +3117,8 @@ pcie: pcie@112f0000 {
  
  			status = "disabled";
  
@@ -820,7 +808,7 @@ index 195b53577dd2..521a3a9b2db1 100644
  				 <&infracfg_ao CLK_INFRA_AO_PCIE_TL_96M>,
  				 <&infracfg_ao CLK_INFRA_AO_PCIE_TL_32K>,
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
-index 22f16f7b31bc..cea4ab0f24b2 100644
+index bc8271a36cee..5ca287e7e12f 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dp.c
 @@ -59,7 +59,9 @@ enum mtk_dp_train_state {
@@ -1568,7 +1556,7 @@ index 22f16f7b31bc..cea4ab0f24b2 100644
 -	bool training_done = false;
 -	short max_retry = 50;
 -	int ret = 0;
- 
+-
 -	do {
 -		switch (mtk_dp->train_state) {
 -		case MTK_DP_TRAIN_STATE_STARTUP:
@@ -1621,7 +1609,7 @@ index 22f16f7b31bc..cea4ab0f24b2 100644
 -		default:
 -			break;
 -		}
--
+ 
 -		if (ret) {
 -			if (ret == -EAGAIN)
 -				continue;
@@ -2127,9 +2115,9 @@ index 22f16f7b31bc..cea4ab0f24b2 100644
  };
  
  static void mtk_dp_debounce_timer(struct timer_list *t)
-@@ -2920,11 +2889,16 @@ static int mtk_dp_audio_hw_params(struct device *dev, void *data,
- 	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
- 	struct mtk_dp_audio_cfg cfg;
+@@ -2925,11 +2894,16 @@ static int mtk_dp_audio_hw_params(struct device *dev, void *data,
+ 		return -ENODEV;
+ 	}
  
 -	mtk_dp->info.audio_cur_cfg.channels = params->cea.channels;
 -	mtk_dp->info.audio_cur_cfg.sample_rate = params->sample_rate;
@@ -2148,7 +2136,7 @@ index 22f16f7b31bc..cea4ab0f24b2 100644
  
  	return 0;
  }
-@@ -2955,6 +2929,8 @@ static int mtk_dp_audio_get_eld(struct device *dev, void *data, uint8_t *buf,
+@@ -2960,6 +2934,8 @@ static int mtk_dp_audio_get_eld(struct device *dev, void *data, uint8_t *buf,
  	else
  		memset(buf, 0, len);
  
@@ -2157,7 +2145,7 @@ index 22f16f7b31bc..cea4ab0f24b2 100644
  	return 0;
  }
  
-@@ -3016,34 +2992,46 @@ static int mtk_dp_probe(struct platform_device *pdev)
+@@ -3021,34 +2997,46 @@ static int mtk_dp_probe(struct platform_device *pdev)
  {
  	struct mtk_dp *mtk_dp;
  	struct device *dev = &pdev->dev;
@@ -2216,7 +2204,7 @@ index 22f16f7b31bc..cea4ab0f24b2 100644
  	if (ret)
  		return ret;
  
-@@ -3060,14 +3048,14 @@ static int mtk_dp_probe(struct platform_device *pdev)
+@@ -3065,14 +3053,14 @@ static int mtk_dp_probe(struct platform_device *pdev)
  
  	mutex_init(&mtk_dp->dp_lock);
  	mutex_init(&mtk_dp->edid_lock);
@@ -2233,7 +2221,7 @@ index 22f16f7b31bc..cea4ab0f24b2 100644
  		ret = mtk_dp_register_audio_driver(dev);
  		if (ret) {
  			dev_err(dev, "Failed to register audio driver: %d\n",
-@@ -3079,7 +3067,7 @@ static int mtk_dp_probe(struct platform_device *pdev)
+@@ -3084,7 +3072,7 @@ static int mtk_dp_probe(struct platform_device *pdev)
  	mtk_dp->phy_dev = platform_device_register_data(dev, "mediatek-dp-phy",
  							PLATFORM_DEVID_AUTO,
  							&mtk_dp->regs,
@@ -2242,7 +2230,7 @@ index 22f16f7b31bc..cea4ab0f24b2 100644
  	if (IS_ERR(mtk_dp->phy_dev)) {
  		dev_err(dev, "Failed to create device mediatek-dp-phy: %ld\n",
  			PTR_ERR(mtk_dp->phy_dev));
-@@ -3097,19 +3085,18 @@ static int mtk_dp_probe(struct platform_device *pdev)
+@@ -3102,19 +3090,18 @@ static int mtk_dp_probe(struct platform_device *pdev)
  
  	mtk_dp->bridge.funcs = &mtk_dp_bridge_funcs;
  	mtk_dp->bridge.of_node = dev->of_node;
@@ -2266,7 +2254,7 @@ index 22f16f7b31bc..cea4ab0f24b2 100644
  	pm_runtime_enable(dev);
  	pm_runtime_get_sync(dev);
  
-@@ -3141,13 +3128,8 @@ static int mtk_dp_suspend(struct device *dev)
+@@ -3146,13 +3133,8 @@ static int mtk_dp_suspend(struct device *dev)
  		usleep_range(2000, 3000);
  	}
  
@@ -2281,7 +2269,7 @@ index 22f16f7b31bc..cea4ab0f24b2 100644
  
  	pm_runtime_put_sync(dev);
  
-@@ -3162,12 +3144,7 @@ static int mtk_dp_resume(struct device *dev)
+@@ -3167,12 +3149,7 @@ static int mtk_dp_resume(struct device *dev)
  
  	mtk_dp_init_port(mtk_dp);
  	mtk_dp_power_enable(mtk_dp);
@@ -2296,17 +2284,10 @@ index 22f16f7b31bc..cea4ab0f24b2 100644
  	return 0;
  }
 diff --git a/sound/soc/mediatek/mt8188/mt8390-evk.c b/sound/soc/mediatek/mt8188/mt8390-evk.c
-index 8047f6f55f87..1301bc315202 100644
+index ade8fcfadd8e..d9ae7b021c79 100644
 --- a/sound/soc/mediatek/mt8188/mt8390-evk.c
 +++ b/sound/soc/mediatek/mt8188/mt8390-evk.c
-@@ -14,13 +14,14 @@
- #include <sound/pcm_params.h>
- #include <sound/soc.h>
- #include "../../codecs/mt6359.h"
--#include "../../codecs/mt6359-accdet.h"
- #include "../common/mtk-afe-platform-driver.h"
- #include "../common/mtk-dsp-sof-common.h"
- #include "../common/mtk-soc-card.h"
+@@ -20,6 +20,8 @@
  #include "../common/mtk-soundcard-driver.h"
  #include "mt8188-afe-clk.h"
  #include "mt8188-afe-common.h"
@@ -2315,34 +2296,7 @@ index 8047f6f55f87..1301bc315202 100644
  
  #define SOF_DMA_DL2 "SOF_DMA_DL2"
  #define SOF_DMA_DL3 "SOF_DMA_DL3"
-@@ -28,7 +29,6 @@
- #define SOF_DMA_UL5 "SOF_DMA_UL5"
- 
- struct mt8188_mt6359_priv {
--	struct snd_soc_jack headset_jack;
- 	struct snd_soc_jack dp_jack;
- 	struct snd_soc_jack hdmi_jack;
- };
-@@ -38,18 +38,6 @@ struct mt8188_card_data {
- 	unsigned long quirk;
- };
- 
--/* Headset jack detection DAPM pins */
--static struct snd_soc_jack_pin mt8188_headset_jack_pins[] = {
--	{
--		.pin = "Headphone",
--		.mask = SND_JACK_HEADPHONE,
--	},
--	{
--		.pin = "Headset Mic",
--		.mask = SND_JACK_MICROPHONE,
--	},
--};
--
- /* HDMI jack detection DAPM pins */
- static struct snd_soc_jack_pin mt8188_hdmi_jack_pins[] = {
- 	{
-@@ -95,6 +83,52 @@ static const struct snd_soc_dapm_route mt8188_mt6359_routes[] = {
+@@ -81,6 +83,52 @@ static const struct snd_soc_dapm_route mt8188_mt6359_routes[] = {
  	{"I021", NULL, SOF_DMA_DL3},
  };
  
@@ -2384,7 +2338,7 @@ index 8047f6f55f87..1301bc315202 100644
 +			}
 +		}
 +	}
-+	
++
 +	return 0;
 +}
 +
@@ -2395,45 +2349,7 @@ index 8047f6f55f87..1301bc315202 100644
  static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
  {
  	struct snd_soc_component *cmpnt_afe =
-@@ -246,13 +280,8 @@ static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
- 
- static int mt8188_mt6359_init(struct snd_soc_pcm_runtime *rtd)
- {
--	struct mtk_soc_card_data *soc_card_data = snd_soc_card_get_drvdata(rtd->card);
--	struct mt8188_mt6359_priv *priv = soc_card_data->mach_priv;
- 	struct snd_soc_component *cmpnt_codec =
- 		asoc_rtd_to_codec(rtd, 0)->component;
--	struct snd_soc_component *cmpnt_accdet =
--		asoc_rtd_to_codec(rtd, 2)->component;
--	int ret;
- 
- 	/* set mtkaif protocol */
- 	mt6359_set_mtkaif_protocol(cmpnt_codec,
-@@ -261,23 +290,6 @@ static int mt8188_mt6359_init(struct snd_soc_pcm_runtime *rtd)
- 	/* mtkaif calibration */
- 	mt8188_mt6359_mtkaif_calibration(rtd);
- 
--	ret = snd_soc_card_jack_new(rtd->card, "Headset Jack",
--				    SND_JACK_HEADSET | SND_JACK_BTN_0 |
--				    SND_JACK_BTN_1 | SND_JACK_BTN_2 |
--				    SND_JACK_BTN_3,
--				    &priv->headset_jack, mt8188_headset_jack_pins,
--				    ARRAY_SIZE(mt8188_headset_jack_pins));
--	if (ret) {
--		dev_err(rtd->dev, "Headset Jack create failed: %d\n", ret);
--		return ret;
--	}
--
--	ret = mt6359_accdet_enable_jack_detect(cmpnt_accdet, &priv->headset_jack);
--	if (ret) {
--		dev_err(rtd->dev, "Headset Jack enable failed: %d\n", ret);
--		return ret;
--	}
--
- 	return 0;
- }
- 
-@@ -762,14 +774,14 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+@@ -726,14 +774,14 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  		.ops = &mt8188_etdm_ops,
  		SND_SOC_DAILINK_REG(ETDM1_IN_BE),
  	},
@@ -2450,7 +2366,7 @@ index 8047f6f55f87..1301bc315202 100644
  		SND_SOC_DAILINK_REG(ETDM2_IN_BE),
  	},
  	[DAI_LINK_ETDM1_OUT_BE] = {
-@@ -782,14 +794,14 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+@@ -746,14 +794,14 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  		.ops = &mt8188_etdm_ops,
  		SND_SOC_DAILINK_REG(ETDM1_OUT_BE),
  	},
@@ -2469,7 +2385,7 @@ index 8047f6f55f87..1301bc315202 100644
  		SND_SOC_DAILINK_REG(ETDM2_OUT_BE),
  	},
  	[DAI_LINK_ETDM3_OUT_BE] = {
-@@ -983,6 +995,10 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -947,6 +995,10 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  			if (strcmp(dai_link->codecs->dai_name, "snd-soc-dummy-dai"))
  				dai_link->init = mt8188_mt6359_init;
  		}
