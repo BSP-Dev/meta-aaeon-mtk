@@ -45,8 +45,6 @@ IMAGE_INSTALL:append = " dhcpcd wpa-supplicant"\
 IMAGE_INSTALL:append = " mesa"\
 IMAGE_INSTALL:append = " gstreamer1.0-plugins-bad"\
 IMAGE_INSTALL:append = " gstreamer1.0-plugins-good"\
-IMAGE_INSTALL:append = " qtconnectivity qtimageformats qtmultimedia qtopcua qtsensors qtserialbus qtserialport"\
-IMAGE_INSTALL:append = " qtwebsockets qttools"\
 IMAGE_INSTALL:append = " ttf-bitstream-vera tree openldap openvpn qpdf tcpdump htop rfkill freetype cifs-utils v4l-utils mtools lmsensors"\
 IMAGE_INSTALL:append = " modemmanager minicom python3-speedtest-cli"\
 IMAGE_INSTALL:append = " gcc gcc-symlinks g++ g++-symlinks make cmake automake autoconf libtool"\
@@ -57,7 +55,6 @@ cat << 'EOF' >> src/meta-rity/meta/conf/templates/default/local.conf.sample
 OPTEE_DRAM_SIZE:genio-510-evk = "0x200000000"
 LICENSE_FLAGS_ACCEPTED += "commercial_libav commercial_x264"
 
-NDA_BUILD = "1"
 DL_DIR = "${TOPDIR}/../downloads"
 SSTATE_DIR = "${TOPDIR}/../sstate-cache"
 DL_TIMEOUT = "600"

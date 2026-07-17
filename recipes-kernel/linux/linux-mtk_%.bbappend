@@ -1,6 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-SRC_URI += "${EXTRA_KERNEL_PATCHES}"
-#SRC_URI += "file://001-ucom-m510-kernel.patch"
+EXTRA_KERNEL_PATCHES ??= ""
+
+SRC_URI:append = " ${EXTRA_KERNEL_PATCHES}"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
