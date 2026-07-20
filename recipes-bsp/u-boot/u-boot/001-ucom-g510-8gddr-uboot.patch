@@ -1,9 +1,18 @@
+From f273962f066cdf4d4220445f7e52f027e2c10e23 Mon Sep 17 00:00:00 2001
+From: FoxYang12 <foxyang@aaeon.com.tw>
+Date: Tue, 19 Aug 2025 19:04:38 +0800
+Subject: [PATCH] @MODEL:@NEW: 1.first release @BUG: @EFFECT:
+
+---
+ arch/arm/dts/genio-510-evk.dts | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
 diff --git a/arch/arm/dts/genio-510-evk.dts b/arch/arm/dts/genio-510-evk.dts
-index 5522ca18b3..aeaf865972 100644
+index aafb70daca..72b14af63a 100644
 --- a/arch/arm/dts/genio-510-evk.dts
 +++ b/arch/arm/dts/genio-510-evk.dts
-@@ -14,9 +14,11 @@
- 	compatible = "mediatek,genio-510-evk", "mediatek,mt8370";
+@@ -34,9 +34,11 @@
+ 	};
  
  	memory@40000000 {
 -		/* 4GB */
