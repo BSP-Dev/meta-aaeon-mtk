@@ -321,3 +321,8 @@ DISTRO_FEATURES:append = " test-account"
 # Build Parallelism - Use 50% of CPU Threads
 BB_NUMBER_THREADS = "${@max(1, oe.utils.cpu_count() // 2)}"
 PARALLEL_MAKE = "-j ${@max(1, oe.utils.cpu_count() // 2)}"
+
+# Package Management
+PACKAGE_CLASSES = "package_deb"
+
+EXTRA_IMAGE_FEATURES:append = " package-management"
