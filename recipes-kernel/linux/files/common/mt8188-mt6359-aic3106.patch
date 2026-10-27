@@ -1,0 +1,78 @@
+--- a/sound/soc/mediatek/mt8188/mt8188-mt6359.c
++++ b/sound/soc/mediatek/mt8188/mt8188-mt6359.c
+@@ -55,6 +55,9 @@
+ #define SOF_DMA_UL5 "SOF_DMA_UL5"
+ 
+ #define RT5682S_CODEC_DAI     "rt5682s-aif1"
++
++/* TI TLV320AIC3106 uses the TLV320AIC3x codec DAI. */
++#define TLV320AIC3X_CODEC_DAI  "tlv320aic3x-hifi"
+ 
+ /* FE */
+ SND_SOC_DAILINK_DEFS(playback2,
+@@ -579,6 +582,54 @@
+ }
+ static const struct snd_soc_ops mt8188_etdm_ops = {
+ 	.hw_params = mt8188_etdm_hw_params,
++};
++
++/*
++ * TLV320AIC3106 is connected to ETDM2 via I2S.
++ * The board wires ETDM2_OUT MCLK directly to the codec MCLK input.
++ *
++ * Keep the original 128fs setting for other codecs. For AIC3106,
++ * program both CPU and codec DAIs with the same 256fs MCLK.
++ * Note: this configures the clock rate, but cannot by itself guarantee
++ * the ETDM2_OUT MCLK remains enabled during capture-only streams.
++ */
++static int mt8188_aic3106_hw_params(struct snd_pcm_substream *substream,
++				    struct snd_pcm_hw_params *params)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct snd_soc_card *card = rtd->card;
++	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
++	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
++	unsigned int rate = params_rate(params);
++	unsigned int mclk = rate * 256;
++	int ret;
++
++	ret = snd_soc_dai_set_sysclk(cpu_dai, 0, mclk,
++				     SND_SOC_CLOCK_OUT);
++	if (ret) {
++		dev_err(card->dev,
++			"AIC3106 %s: failed to set CPU MCLK %u Hz: %d\n",
++			rtd->dai_link->name, mclk, ret);
++		return ret;
++	}
++
++	ret = snd_soc_dai_set_sysclk(codec_dai, 0, mclk,
++				     SND_SOC_CLOCK_IN);
++	if (ret) {
++		dev_err(card->dev,
++			"AIC3106 %s: failed to set codec MCLK %u Hz: %d\n",
++			rtd->dai_link->name, mclk, ret);
++		return ret;
++	}
++
++	dev_info(card->dev, "AIC3106 %s: rate=%u Hz, MCLK=%u Hz\n",
++		 rtd->dai_link->name, rate, mclk);
++
++	return 0;
++}
++
++static const struct snd_soc_ops mt8188_aic3106_ops = {
++	.hw_params = mt8188_aic3106_hw_params,
+ };
+ 
+ enum {
+@@ -1496,6 +1547,10 @@
+ 					dai_link->exit = mt8188_rt5682s_codec_exit;
+ 					init_rt5682s = true;
+ 				}
++			} else if (!strcmp(dai_link->codecs->dai_name,
++					   TLV320AIC3X_CODEC_DAI)) {
++				/* TLV320AIC3106: configure both CPU and codec MCLK. */
++				dai_link->ops = &mt8188_aic3106_ops;
+ 			} else {
+ 				if (strcmp(dai_link->codecs->dai_name, "snd-soc-dummy-dai")) {
+ 					if (!init_dumb) {

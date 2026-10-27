@@ -1,0 +1,340 @@
+/dts-v1/;
+
+#include "mt8390-genio-700-evk.dts"
+
+/ {
+    aliases {
+        rtc0 = &pcf85063;
+        rtc1 = &mt6359rtc;
+    };
+
+    /delete-node/ touch0_fixed_3v3;
+    /delete-node/ usb_p0_vbus;
+    /delete-node/ usb_hub_reset_1v8;
+    /delete-node/ gpio_fixed_3v3;
+    /delete-node/ common_fixed_5v;
+};
+
+&i2c0 {
+    /delete-node/ touchscreen@5d;
+
+    tlv320aic3106: audio-codec@1b {
+        #sound-dai-cells = <0>;
+		compatible = "ti,tlv320aic3106";
+		reg = <0x1b>;
+		ai3x-micbias-vg = <1>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&aic3106_reset_pins>;
+		status = "okay";
+		reset-gpios = <&pio 6 GPIO_ACTIVE_LOW>;
+    };
+};
+
+&i2c4 {
+    pinctrl-names = "default";
+    /delete-property/ pinctrl-1;
+    /delete-node/ rt1715@4e;
+
+    pcf85063: pcf85063@51 {
+        compatible = "nxp,pcf85063";
+    	reg = <0x51>;
+	};
+};
+
+&i2c6 {
+    baseboard_eeprom: baseboard_eeprom@57 {
+		compatible = "atmel,24c02";
+		label = "AT24C02D";
+		reg = <0x57>;
+		pagesize = <8>;
+		size = <256>;
+		address-width = <8>;
+		num-addresses = <1>;
+	};
+};
+
+&uart3 {
+	pinctrl-0 = <&uart3_pins>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&spi0 {
+    pinctrl-0 = <&spi0_pins>;
+	pinctrl-names = "default";
+	mediatek,pad-select = <0>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	spidev@0 {
+ 		compatible = "mediatek,aiot-board";
+		spi-max-frequency = <50000000>;
+		reg = <0>;
+	};
+};
+
+&spi1 {
+	pinctrl-0 = <&spi1_pins>;
+	pinctrl-names = "default";
+	mediatek,pad-select = <0>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	spidev@0 {
+		compatible = "mediatek,aiot-board";
+		spi-max-frequency = <50000000>;
+		reg = <0>;
+	};
+};
+
+&spi2 {
+    tpm2: npct75x@0 {
+        compatible = "tcg,tpm_tis-spi";
+        reg = <0>;
+        spi-max-frequency = <1000000>;
+
+        pinctrl-names = "default";
+        pinctrl-0 = <&tpm_rst>;
+
+        reset-gpios = <&pio 24 GPIO_ACTIVE_LOW>;
+    };
+};
+
+&ssusb0 {
+    connector {
+        /delete-property/ vbus-supply;
+    };
+};
+
+&ssusb1 {
+    /delete-property/ pinctrl-0;
+    /delete-property/ pinctrl-names;
+    dr_mode = "host";
+    maximum-speed = "super-speed";
+    /delete-property/ usb-role-switch;
+    /delete-node/ port;
+};
+
+&xhci1 {
+    /delete-property/ vbus-supply;
+};
+
+&afe {
+    mediatek,etdm-in2-cowork-source = <3>;
+};
+
+&sound {
+    /* TLV320AIC3106 Playback */
+    dai-link-5 {
+		link-name = "ETDM2_OUT_BE";
+        dai-format = "i2s";
+        mediatek,clk-provider = "cpu";
+		status = "okay";
+
+		codec {
+			sound-dai = <&tlv320aic3106>;
+		};
+	};
+    /* TLV320AIC3106 Capture */
+    dai-link-6 {
+		link-name = "ETDM2_IN_BE";
+        dai-format = "i2s";
+        mediatek,clk-provider = "cpu";
+		status = "okay";
+
+		codec {
+			sound-dai = <&tlv320aic3106>;
+		};
+	};
+};
+
+&edp_panel_3v3_en_pins {
+    gpio = <&pio 111 GPIO_ACTIVE_HIGH>;
+};
+
+&pio {
+    /delete-node/ rt1715_int_pins;
+    /delete-node/ usb1_default_pins;
+    /delete-node/ touch_pins;
+    /delete-node/ wifi_pwrseq_pins;
+    /delete-node/ dsi0_en_pins_default;
+
+    gpio_pins: gpiogrp {
+        cn29_gpio: cn29grp {
+            pinmux = <PINMUX_GPIO0__FUNC_B_GPIO0>,
+                     <PINMUX_GPIO1__FUNC_B_GPIO1>,
+			         <PINMUX_GPIO3__FUNC_B_GPIO3>,
+				     <PINMUX_GPIO5__FUNC_B_GPIO5>,
+                     <PINMUX_GPIO7__FUNC_B_GPIO7>,
+                     <PINMUX_GPIO123__FUNC_B_GPIO123>;
+            output-high;
+        };
+        cn30_gpio: cn30grp {
+            pinmux = <PINMUX_GPIO9__FUNC_B_GPIO9>,
+                     <PINMUX_GPIO10__FUNC_B_GPIO10>,
+                     <PINMUX_GPIO11__FUNC_B_GPIO11>,
+                     <PINMUX_GPIO12__FUNC_B_GPIO12>,
+                     <PINMUX_GPIO13__FUNC_B_GPIO13>,
+                     <PINMUX_GPIO14__FUNC_B_GPIO14>;
+            output-high;
+        };
+    };
+
+    tpm_rst: tpmgrp {
+        pins {
+            pinmux = <PINMUX_GPIO24__FUNC_B_GPIO24>;
+            output-high;
+        };
+    };
+
+    uart1_pins {
+        pins {
+            pinmux = <PINMUX_GPIO33__FUNC_O_UTXD1>,
+                <PINMUX_GPIO34__FUNC_I1_URXD1>,
+                <PINMUX_GPIO88__FUNC_O_URTS1>,
+                <PINMUX_GPIO89__FUNC_I1_UCTS1>;
+            bias-pull-up;
+        };
+    };
+
+    uart2_pins {
+        pins {
+            pinmux = <PINMUX_GPIO35__FUNC_O_UTXD2>,
+                <PINMUX_GPIO36__FUNC_I1_URXD2>,
+                <PINMUX_GPIO86__FUNC_O_URTS2>,
+                <PINMUX_GPIO87__FUNC_I1_UCTS2>;
+            bias-pull-up;
+        };
+    };
+
+    uart3_pins: uart3-pins {
+        pins {
+            pinmux = <PINMUX_GPIO90__FUNC_O_UTXD3>,
+                <PINMUX_GPIO91__FUNC_I1_URXD3>;
+            bias-pull-up;
+        };
+    };
+
+    aic3106_reset_pins: aic3106-reset-pins {
+        pins {
+            pinmux = <PINMUX_GPIO6__FUNC_B_GPIO6>;
+            output-high;
+        };
+    };
+};
+
+&mmc2_default_pins {
+    /delete-node/ pins-pcm;
+};
+
+&usb_default_pins {
+    /delete-node/ pins-vbus;
+};
+
+&wifi_pwrseq {
+    status = "disabled";
+    /delete-property/ pinctrl-names;
+    /delete-property/ pinctrl-0;
+    /delete-property/ reset-gpios;
+};
+
+&dsi0_en {
+    /delete-property/ gpio;
+    /delete-property/ pinctrl-names;
+    /delete-property/ pinctrl-0;
+};
+
+/* ========================================
+* CPU Thermal Trip Points
+* Alert0   : 105°C
+* Alert1   : 110°C
+* Critical : 115°C
+* ======================================== */
+
+&thermal_zones {
+    cpu-little0-thermal {
+        trips {
+            trip-alert0 {
+                temperature = <105000>;
+            };
+            trip-alert1 {
+                temperature = <110000>;
+            };
+            trip-crit {
+                temperature = <115000>;
+            };
+        };
+    };
+
+    cpu-little1-thermal {
+        trips {
+            trip-alert0 {
+                temperature = <105000>;
+            };
+            trip-alert1 {
+                temperature = <110000>;
+            };
+            trip-crit {
+                temperature = <115000>;
+            };
+        };
+    };
+
+    cpu-little2-thermal {
+        trips {
+            trip-alert0 {
+                temperature = <105000>;
+            };
+            trip-alert1 {
+                temperature = <110000>;
+            };
+            trip-crit {
+                temperature = <115000>;
+            };
+        };
+    };
+
+    cpu-little3-thermal {
+        trips {
+            trip-alert0 {
+                temperature = <105000>;
+            };
+            trip-alert1 {
+                temperature = <110000>;
+            };
+            trip-crit {
+                temperature = <115000>;
+            };
+        };
+    };
+
+    cpu-big0-thermal {
+        trips {
+            trip-alert0 {
+                temperature = <105000>;
+            };
+            trip-alert1 {
+                temperature = <110000>;
+            };
+            trip-crit {
+                temperature = <115000>;
+            };
+        };
+    };
+
+    cpu-big1-thermal {
+        trips {
+            trip-alert0 {
+                temperature = <105000>;
+            };
+            trip-alert1 {
+                temperature = <110000>;
+            };
+            trip-crit {
+                temperature = <115000>;
+            };
+        };
+    };
+};

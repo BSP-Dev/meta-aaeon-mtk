@@ -1,0 +1,33 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/pinctrl/mediatek,mt8188-pinfunc.h>
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	fragment@0 {
+		target = <&mipi_tx0>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@1 {
+		target = <&dsi0>;
+		__overlay__ {
+			status = "okay";
+			panel@0 {
+				status = "okay";
+			};
+		};
+	};
+
+    fragment@2 {
+        target = <&disp_pwm1_pin_default>;
+        __overlay__ {
+            pins1 {
+                pinmux = <PINMUX_GPIO29__FUNC_O_DISP_PWM0>;
+            };
+        };
+    };
+};
