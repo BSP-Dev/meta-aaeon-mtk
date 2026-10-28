@@ -48,7 +48,7 @@ PATH=${PATH}:~/bin
         ```bash!
         $ echo 'NDA_BUILD = "1"' >> $BUILD_DIR/conf/site.conf
         ```
-    - If you have already built IoT Yocto before, you might notice there are two folders `downloads` and `sstate-cache` created during the build process. ([Reference](https://genio.mediatek.com/doc/iot-yocto/latest/sw/yocto/get-started/build-code.html#setup-dl-dir-and-sstate-dir)):
+    - If you have already built IoT Yocto before, you might notice there are two folders `downloads` and `sstate-cache` created during the build process. ([Reference](https://genio.mediatek.com/doc/iot-yocto/latest/sw/yocto/get-started/build-code.html#setup-dl-dir-and-sstate-dir))
         ```bash!
         $ echo 'DL_DIR = "${TOPDIR}/../downloads"' >> $BUILD_DIR/conf/site.conf
         $ echo 'SSTATE_DIR = "${TOPDIR}/../sstate-cache"' >> $BUILD_DIR/conf/site.conf
@@ -65,6 +65,51 @@ PATH=${PATH}:~/bin
     $ bitbake rity-demo-image -k
     ```
 - Note: (1)	If FetchError,then change git branch=master => branch=main
+
+## Flash image to Board
+- In order to write the on-board storage with Genio Tools, you need to set the Genio SoC in download mode, which allows Genio Tools to transfer a download agent binary to the SRAM of SoC.
+- Make sure you have install the latest Genio Tools on your [Linux](https://genio.mediatek.com/doc/iot-yocto/latest/sw/yocto/get-started/env-setup/flash-env-linux.html) or [Windows](https://genio.mediatek.com/doc/iot-yocto/latest/sw/yocto/get-started/env-setup/flash-env-windows.html) host before continuing the process.
+
+### uCOM-M510
+```bash!
+$ cd $BUILD_DIR/tmp/deploy/images/mtk-ucom-m510
+```
+### uCOM-M700
+```bash!
+$ cd $BUILD_DIR/tmp/deploy/images/mtk-ucom-m700
+```
+
+To use the default configuration, run the following commands:
+```bash!
+$ genio-flash -i rity-demo-image
+```
+- The dtbo overlays included by default are: `video.dtbo apusys.dtbo display-hdmi.dtbo`
+
+### List of Display Device Tree Overlay:
+- Display Device Tree Overlay
+
+    | dtbo | Description|
+    |----- | ---------- |
+    | display-aaeon-dsi.dtbo | DSI |
+    | display-aaeon-edp.dtbo | eDP |
+    | display-hdmi.dtbo | HDMI |
+    | display-dp.dtbo | DP |
+
+- To enable display as the connector, load the overlay file DTBO file during flashing process.
+    ```bash!
+    $ genio-flash -i rity-demo-image --load-dtbo display-xxx.dtbo
+    ```
+- If you do not need `display-hdmi.dtbo`, use the unload-dtbo option to remove the default DTBO.
+    ```bash!
+    $ genio-flash -i rity-demo-image --unload-dtbo display-hdmi.dtbo
+    ```
+- After boot into the console you can use `modeprint mediatek` command to check if display has been properly configured.
+    ```bash!
+    root@mtk-ucom-m510:~# modeprint mediatek
+    ```
+    [Ref: Display Interface on Genio 510/700-EVK](https://genio.mediatek.com/doc/iot-yocto/latest/sw/yocto/app-dev/display/display-g700-evk.html#)
+
+    [Ref: MediaTek Display Page](https://genio.mediatek.com/doc/iot-yocto/latest/sw/yocto/app-dev/display/display-common.html#display-page)
 
 ## Documentations:
 
